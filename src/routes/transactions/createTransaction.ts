@@ -14,13 +14,14 @@ const router = Router();
 router.post(
   "/",
   requireAuth,
-  [body("pointsChange").isInt().not().equals("0")],
+  [body("pointsChange").isInt().not().equals("0").not().isString()],
   validateRequest,
   (req: Request, res: Response<ResBody>) => {
+    console.log(typeof req.body.pointsChange);
     return res.json({
       success: true,
     });
   }
 );
 
-export { router as createTransactionRoute };
+export { router as createTransactionRouter };
