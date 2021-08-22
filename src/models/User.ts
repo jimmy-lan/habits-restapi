@@ -23,8 +23,6 @@ export interface UserProps {
   /** Part of key used to generate refresh token, unique for each client */
   clientSecret: string;
   role: UserRole;
-  /** Number of points that this user has */
-  points: number;
 
   profile: Partial<{
     name: Partial<{
@@ -39,7 +37,9 @@ export interface UserProps {
  * Interface that describes the properties in a user
  * document. Required by mongoose.
  */
-export type UserDocument = Document<UserProps> & UserProps & Timestamp;
+export type UserDocument = Document<UserProps> &
+  Required<UserProps> &
+  Timestamp;
 
 /**
  * Schema used to model users. Required by mongoose.
@@ -67,10 +67,6 @@ const userSchema = new Schema<UserDocument>(
     role: {
       type: String,
       enum: Object.keys(UserRole),
-      required: true,
-    },
-    points: {
-      type: Number,
       required: true,
     },
 
