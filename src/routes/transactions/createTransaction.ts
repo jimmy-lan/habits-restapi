@@ -29,6 +29,8 @@ router.post(
     const { title, pointsChange } = req.body;
     const { id } = req.user!;
 
+    let createdTransaction;
+
     /*
      * We should perform the following in this function:
      * - (1) Create a new transaction for the current user, recording
@@ -41,7 +43,7 @@ router.post(
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // === Add transaction
-      await Transaction.create(
+      createdTransaction = await Transaction.create(
         [
           {
             userId: id,
@@ -69,6 +71,7 @@ router.post(
 
     return res.json({
       success: true,
+      payload: createdTransaction,
     });
   }
 );
