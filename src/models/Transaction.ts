@@ -12,15 +12,15 @@ export interface TransactionProps {
   /** ID of the user who owns this transaction. */
   userId: string;
   /** Title of this transaction. */
-  title: string;
+  title?: string;
   /** Change in points. A positive number means points are added.
    * A negative number means points are deducted. */
   pointsChange: number;
-  isDeleted: boolean;
+  isDeleted?: boolean;
 }
 
 export type TransactionDocument = Document<TransactionProps> &
-  TransactionProps &
+  Required<TransactionProps> &
   Timestamp;
 
 const transactionSchema = new Schema<TransactionDocument>(
@@ -58,10 +58,10 @@ const transactionSchema = new Schema<TransactionDocument>(
 );
 
 export interface TransactionModel extends Model<TransactionDocument> {
-  build(props: Partial<TransactionProps>): TransactionDocument;
+  build(props: TransactionProps): TransactionDocument;
 }
 
-const build = (props: Partial<TransactionProps>) => {
+const build = (props: TransactionProps) => {
   return new Transaction(props);
 };
 transactionSchema.static("build", build);
