@@ -88,7 +88,10 @@ const userSchema = new Schema<UserDocument>(
       enum: Object.keys(UserRole),
       required: true,
     },
-    points: Number,
+    points: {
+      type: Number,
+      required: true,
+    },
 
     profile: {
       name: {
