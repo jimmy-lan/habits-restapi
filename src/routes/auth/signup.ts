@@ -7,12 +7,13 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 
 import { AuthResBody, UserRole } from "../../types";
-import { User } from "../../models";
+import { Property, User } from "../../models";
 import { validateRequest } from "../../middlewares";
 import { BadRequestError } from "../../errors";
 import { PasswordEncoder } from "../../services";
 import { signTokens } from "../../util";
 import { tokenConfig } from "../../config";
+import mongoose from "mongoose";
 
 const router = Router();
 
@@ -66,10 +67,17 @@ router.post(
       ),
       profile: { name: { first: firstName, last: lastName } },
       role: UserRole.member,
-      points: 0,
     });
 
-    await user.save();
+    const session = await mongoose.startSession();
+    await session.withTransaction(async () => {
+      // Save new user
+      const savedUser = await user.save();
+
+      // Initialize user properties
+      await Property.create([{ userId: savedUser.id, points: 0 }]);
+    });
+    session.endSession();
 
     const [refreshToken, accessToken] = await signTokens(user);
     const payload = { refreshToken, accessToken, user };

@@ -9,6 +9,7 @@ import mongoose, { Schema, Document, Model, HookNextFunction } from "mongoose";
 import { PasswordEncoder } from "../services";
 import { UserRole } from "../types";
 import { tokenConfig } from "../config";
+import { DeepRequired, Timestamp } from "../types";
 
 /**
  * Interface that describes the properties required
@@ -22,8 +23,6 @@ export interface UserProps {
   /** Part of key used to generate refresh token, unique for each client */
   clientSecret: string;
   role: UserRole;
-  /** Number of points that this user has */
-  points: number;
 
   profile: Partial<{
     name: Partial<{
@@ -38,27 +37,7 @@ export interface UserProps {
  * Interface that describes the properties in a user
  * document. Required by mongoose.
  */
-export type UserDocument = Document<UserProps> & {
-  email: string;
-  password: string;
-  /** Part of key used to generate refresh token, unique for each client. */
-  clientSecret: string;
-  role: UserRole;
-  /** Number of points that this user has. Can be a negative number. */
-  points: number;
-
-  profile: {
-    name: {
-      first: string;
-      last: string;
-    };
-    avatar: string;
-  };
-
-  // These fields are automatically appended by mongodb.
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type UserDocument = Document & DeepRequired<UserProps> & Timestamp;
 
 /**
  * Schema used to model users. Required by mongoose.
@@ -86,10 +65,6 @@ const userSchema = new Schema<UserDocument>(
     role: {
       type: String,
       enum: Object.keys(UserRole),
-      required: true,
-    },
-    points: {
-      type: Number,
       required: true,
     },
 

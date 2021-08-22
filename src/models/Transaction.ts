@@ -4,20 +4,23 @@
  * Description: File holding a transaction model.
  */
 
-import { Document, Model, Schema } from "mongoose";
-import * as mongoose from "mongoose";
+import mongoose, { Document, Model, Schema, ObjectId } from "mongoose";
+import { DeepRequired, Timestamp } from "../types";
 
 export interface TransactionProps {
   /** ID of the user who owns this transaction. */
   userId: string;
   /** Title of this transaction. */
-  title: string;
+  title?: string;
   /** Change in points. A positive number means points are added.
    * A negative number means points are deducted. */
   pointsChange: number;
+  isDeleted?: boolean;
 }
 
-export type TransactionDocument = Document<TransactionProps>;
+export type TransactionDocument = Document &
+  DeepRequired<TransactionProps> &
+  Timestamp;
 
 const transactionSchema = new Schema<TransactionDocument>(
   {
@@ -36,6 +39,7 @@ const transactionSchema = new Schema<TransactionDocument>(
       type: Number,
       required: true,
     },
+    isDeleted: Boolean,
   },
   {
     timestamps: true,
@@ -43,7 +47,9 @@ const transactionSchema = new Schema<TransactionDocument>(
       transform(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
+        delete ret.userId;
         delete ret.__v;
+        delete ret.isDeleted;
       },
       versionKey: false,
     },
@@ -51,10 +57,10 @@ const transactionSchema = new Schema<TransactionDocument>(
 );
 
 export interface TransactionModel extends Model<TransactionDocument> {
-  build(props: Partial<TransactionProps>): TransactionDocument;
+  build(props: TransactionProps): TransactionDocument;
 }
 
-const build = (props: Partial<TransactionProps>) => {
+const build = (props: TransactionProps) => {
   return new Transaction(props);
 };
 transactionSchema.static("build", build);
