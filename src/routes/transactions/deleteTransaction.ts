@@ -23,7 +23,6 @@ router.delete(
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { transactionId } = req.params;
-    console.log(transactionId);
     const user = req.user!;
 
     // Find documents needed for this route
