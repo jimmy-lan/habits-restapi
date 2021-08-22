@@ -77,3 +77,5 @@ router.delete(
     });
   }
 );
+
+export { router as deleteTransactionRouter };
