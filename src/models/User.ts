@@ -41,10 +41,10 @@ export interface UserProps {
 export type UserDocument = Document<UserProps> & {
   email: string;
   password: string;
-  /** Part of key used to generate refresh token, unique for each client */
+  /** Part of key used to generate refresh token, unique for each client. */
   clientSecret: string;
   role: UserRole;
-  /** Number of points that this user has */
+  /** Number of points that this user has. Can be a negative number. */
   points: number;
 
   profile: {
