@@ -11,9 +11,9 @@ import { ResBody } from "../../types";
 import { requireAuth, validateRequest } from "../../middlewares";
 import { body } from "express-validator";
 import * as mongoose from "mongoose";
-import { Transaction, TransactionDocument } from "../../models/Transaction";
+import { Transaction } from "../../models/Transaction";
 import { User } from "../../models";
-import { NotFoundError, UnauthorizedError } from "../../errors";
+import { UnauthorizedError } from "../../errors";
 
 const router = Router();
 
