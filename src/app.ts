@@ -39,6 +39,7 @@ if (process.env.NODE_ENV !== "development") {
 
 // Register routers
 app.use("/api/v1/users", authRouter);
+app.use("/api/v1/transactions", transactionsRouter);
 
 // Resource not found
 app.all("*", () => {
