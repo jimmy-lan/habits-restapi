@@ -12,6 +12,8 @@ import { requireAuth, validateRequest } from "../../middlewares";
 import { body } from "express-validator";
 import * as mongoose from "mongoose";
 import { Transaction, TransactionDocument } from "../../models/Transaction";
+import { User } from "../../models";
+import { NotFoundError, UnauthorizedError } from "../../errors";
 
 const router = Router();
 
@@ -52,7 +54,12 @@ router.post(
       // === END Add transaction
 
       // === Add user points
-
+      const user = await User.findById(id).session(session);
+      if (!user) {
+        throw new UnauthorizedError();
+      }
+      user.points += pointsChange;
+      await user.save();
       // === END Add user points
     });
     session.endSession();
