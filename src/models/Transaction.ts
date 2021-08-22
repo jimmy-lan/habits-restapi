@@ -24,7 +24,6 @@ const transactionSchema = new Schema<TransactionDocument>(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      unique: true,
     },
     title: {
       type: String,
