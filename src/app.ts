@@ -33,9 +33,7 @@ app.use(
     },
   })
 );
-if (process.env.NODE_ENV !== "development") {
-  app.use(rateLimitIp);
-}
+app.use(rateLimitIp);
 
 // Register routers
 app.use("/api/v1/users", authRouter);
