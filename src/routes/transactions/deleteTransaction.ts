@@ -9,13 +9,14 @@
 import { Router, Request, Response } from "express";
 import { requireAuth, validateRequest } from "../../middlewares";
 import { ResBody } from "../../types";
+import { query } from "express-validator";
 
 const router = Router();
 
 router.delete(
-  "/",
+  "/:transactionId",
   requireAuth,
-  [],
+  [query("transactionId").notEmpty().isMongoId()],
   validateRequest,
   (req: Request, res: Response<ResBody>) => {}
 );
