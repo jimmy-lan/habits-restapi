@@ -58,6 +58,9 @@ router.post(
       if (!user) {
         throw new UnauthorizedError();
       }
+      if (!user.points) {
+        user.points = 0;
+      }
       user.points += pointsChange;
       await user.save();
       // === END Add user points
