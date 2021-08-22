@@ -7,12 +7,12 @@
  */
 
 import { Router, Request, Response } from "express";
+import mongoose from "mongoose";
+import { param } from "express-validator";
 import { requireAuth, validateRequest } from "../../middlewares";
 import { ResBody } from "../../types";
-import mongoose from "mongoose";
 import { Property, Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
-import { param } from "express-validator";
 
 const router = Router();
 
