@@ -66,6 +66,7 @@ router.post(
       ),
       profile: { name: { first: firstName, last: lastName } },
       role: UserRole.member,
+      points: 0,
     });
 
     await user.save();
