@@ -29,7 +29,9 @@ router.post(
     const { title, pointsChange } = req.body;
     const { id } = req.user!;
 
-    let createdTransaction;
+    // These values will be populated and returned
+    let createdTransaction = {};
+    let newPoints = 0;
 
     /*
      * We should perform the following in this function:
@@ -64,14 +66,18 @@ router.post(
         user.points = 0;
       }
       user.points += pointsChange;
-      await user.save();
+      const savedUser = await user.save();
+      newPoints = savedUser.points;
       // === END Add user points
     });
     session.endSession();
 
     return res.json({
       success: true,
-      payload: createdTransaction,
+      payload: {
+        transaction: createdTransaction,
+        points: newPoints,
+      },
     });
   }
 );
