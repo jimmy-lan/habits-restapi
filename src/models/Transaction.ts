@@ -8,6 +8,8 @@ import { Document, Model, Schema } from "mongoose";
 import * as mongoose from "mongoose";
 
 export interface TransactionProps {
+  /** ID of the user who owns this transaction. */
+  userId: string;
   /** Title of this transaction. */
   title: string;
   /** Change in points. A positive number means points are added.
@@ -19,6 +21,11 @@ export type TransactionDocument = Document<TransactionProps>;
 
 const transactionSchema = new Schema<TransactionDocument>(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      unique: true,
+    },
     title: {
       type: String,
       required: true,
