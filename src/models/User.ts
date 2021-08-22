@@ -22,6 +22,8 @@ export interface UserProps {
   /** Part of key used to generate refresh token, unique for each client */
   clientSecret: string;
   role: UserRole;
+  /** Number of points that this user has */
+  points: number;
 
   profile: Partial<{
     name: Partial<{
@@ -42,6 +44,8 @@ export type UserDocument = Document<UserProps> & {
   /** Part of key used to generate refresh token, unique for each client */
   clientSecret: string;
   role: UserRole;
+  /** Number of points that this user has */
+  points: number;
 
   profile: {
     name: {
@@ -84,6 +88,7 @@ const userSchema = new Schema<UserDocument>(
       enum: Object.keys(UserRole),
       required: true,
     },
+    points: Number,
 
     profile: {
       name: {
