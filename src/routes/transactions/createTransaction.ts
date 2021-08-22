@@ -7,14 +7,12 @@
  */
 
 import { Request, Response, Router } from "express";
-import { ResBody } from "../../types";
-import { requireAuth, validateRequest } from "../../middlewares";
 import { body } from "express-validator";
 import mongoose from "mongoose";
-import { Transaction } from "../../models/Transaction";
-import { User } from "../../models";
-import { UnauthorizedError } from "../../errors";
-import { Property, PropertyDocument } from "../../models/Property";
+import { ResBody } from "../../types";
+import { requireAuth, validateRequest } from "../../middlewares";
+import { Transaction, Property } from "../../models";
+import { NotFoundError } from "../../errors";
 
 const router = Router();
 
@@ -45,25 +43,28 @@ router.post(
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // === Add transaction
-      createdTransaction = await Transaction.create(
-        [
-          {
-            userId: id,
-            title: title || "Untitled transaction",
-            pointsChange,
-          },
-        ],
-        { session }
-      );
+      createdTransaction = (
+        await Transaction.create(
+          [
+            {
+              userId: id,
+              title: title || "Untitled transaction",
+              pointsChange,
+            },
+          ],
+          { session }
+        )
+      )[0];
       // === END Add transaction
 
       // === Add user points
-      let property = await Property.findOne({ userId: id }, null, { session });
+      const property = await Property.findOne({ userId: id }, null, {
+        session,
+      });
       if (!property) {
-        property = ((await Property.create([{ userId: id, points: 0 }], {
-          session,
-        })) as unknown) as PropertyDocument;
-        console.log(property);
+        throw new NotFoundError(
+          "Could not locate property data for the current user."
+        );
       }
       property.points += pointsChange;
       const savedProperty = await property.save();
