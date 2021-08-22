@@ -46,3 +46,5 @@ router.get(
     });
   }
 );
+
+export { router as listTransactionsRouter };
