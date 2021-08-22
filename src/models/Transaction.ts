@@ -5,7 +5,7 @@
  */
 
 import { Document, Model, Schema } from "mongoose";
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 
 export interface TransactionProps {
   /** ID of the user who owns this transaction. */
