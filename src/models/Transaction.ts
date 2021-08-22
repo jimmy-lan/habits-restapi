@@ -6,6 +6,7 @@
 
 import { Document, Model, Schema } from "mongoose";
 import mongoose from "mongoose";
+import { Timestamp } from "../types/Timestamp";
 
 export interface TransactionProps {
   /** ID of the user who owns this transaction. */
@@ -18,11 +19,7 @@ export interface TransactionProps {
   isDeleted: boolean;
 }
 
-export type TransactionDocument = Document<TransactionProps> & {
-  // These fields are automatically appended by mongodb.
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type TransactionDocument = Document<TransactionProps> & Timestamp;
 
 const transactionSchema = new Schema<TransactionDocument>(
   {
