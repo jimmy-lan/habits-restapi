@@ -19,7 +19,9 @@ export interface TransactionProps {
   isDeleted: boolean;
 }
 
-export type TransactionDocument = Document<TransactionProps> & Timestamp;
+export type TransactionDocument = Document<TransactionProps> &
+  TransactionProps &
+  Timestamp;
 
 const transactionSchema = new Schema<TransactionDocument>(
   {
