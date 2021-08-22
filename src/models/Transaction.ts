@@ -15,6 +15,7 @@ export interface TransactionProps {
   /** Change in points. A positive number means points are added.
    * A negative number means points are deducted. */
   pointsChange: number;
+  isDeleted: boolean;
 }
 
 export type TransactionDocument = Document<TransactionProps> & {
@@ -40,6 +41,7 @@ const transactionSchema = new Schema<TransactionDocument>(
       type: Number,
       required: true,
     },
+    isDeleted: Boolean,
   },
   {
     timestamps: true,
@@ -48,6 +50,7 @@ const transactionSchema = new Schema<TransactionDocument>(
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
+        delete ret.isDeleted;
       },
       versionKey: false,
     },
