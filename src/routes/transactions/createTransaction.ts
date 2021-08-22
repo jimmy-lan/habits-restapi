@@ -11,7 +11,7 @@ import { ResBody } from "../../types";
 import { requireAuth, validateRequest } from "../../middlewares";
 import { body } from "express-validator";
 import * as mongoose from "mongoose";
-import { Transaction } from "../../models/Transaction";
+import { Transaction, TransactionDocument } from "../../models/Transaction";
 
 const router = Router();
 
@@ -39,12 +39,16 @@ router.post(
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // === Add transaction
-      const transaction = Transaction.build({
-        userId: id,
-        title,
-        pointsChange,
-      });
-      await transaction.save();
+      await Transaction.create(
+        [
+          {
+            userId: id,
+            title: title || "Untitled transaction",
+            pointsChange,
+          },
+        ],
+        { session }
+      );
       // === END Add transaction
 
       // === Add user points
