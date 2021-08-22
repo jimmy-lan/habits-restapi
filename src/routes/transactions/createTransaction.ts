@@ -5,9 +5,10 @@
  */
 
 import { Request, Response, Router } from "express";
+import { ResBody } from "../../types";
 
 const router = Router();
 
-router.post("/", (req: Request, res: Response) => {});
+router.post("/", (req: Request, res: Response<ResBody>) => {});
 
 export { router as createTransactionRoute };
