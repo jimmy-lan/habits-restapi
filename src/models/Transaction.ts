@@ -49,6 +49,7 @@ const transactionSchema = new Schema<TransactionDocument>(
       transform(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
+        delete ret.userId;
         delete ret.__v;
         delete ret.isDeleted;
       },
