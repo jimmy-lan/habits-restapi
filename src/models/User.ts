@@ -37,9 +37,7 @@ export interface UserProps {
  * Interface that describes the properties in a user
  * document. Required by mongoose.
  */
-export type UserDocument = Document<UserProps> &
-  DeepRequired<UserProps> &
-  Timestamp;
+export type UserDocument = Document & DeepRequired<UserProps> & Timestamp;
 
 /**
  * Schema used to model users. Required by mongoose.

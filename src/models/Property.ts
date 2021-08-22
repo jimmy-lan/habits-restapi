@@ -17,7 +17,7 @@ interface PropertyProps {
   points: number;
 }
 
-export type PropertyDocument = Document<PropertyProps> &
+export type PropertyDocument = Document &
   DeepRequired<PropertyProps> &
   Timestamp;
 

@@ -27,7 +27,7 @@ router.delete(
 
     // Find documents needed for this route
     const transaction = await Transaction.findOne({
-      id: transactionId,
+      _id: transactionId,
       userId: user.id,
     });
     if (!transaction) {
