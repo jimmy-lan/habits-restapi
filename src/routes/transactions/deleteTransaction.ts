@@ -11,6 +11,8 @@ import { requireAuth, validateRequest } from "../../middlewares";
 import { ResBody } from "../../types";
 import { query } from "express-validator";
 import mongoose from "mongoose";
+import { Transaction } from "../../models";
+import { NotFoundError } from "../../errors";
 
 const router = Router();
 
@@ -23,10 +25,19 @@ router.delete(
     const { transactionId } = req.query;
     const user = req.user!;
 
+    const transaction = await Transaction.findOne({
+      id: transactionId,
+      userId: user.id,
+    });
+    if (!transaction) {
+      throw new NotFoundError(
+        `Transaction "${transactionId}" could not be found.`
+      );
+    }
+
     /*
      * We should perform the following in this function:
-     * - (1) Find the requested transaction for the current user, and
-     *   set the transaction as deleted.
+     * - (1) Set the target transaction as deleted.
      * - (2) Update the number of points that the user has in the Users
      *   document after the transaction is reverted.
      * These operations should be atomic. For example, if (2) fails, we
