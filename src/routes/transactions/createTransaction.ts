@@ -10,7 +10,7 @@ import { Request, Response, Router } from "express";
 import { ResBody } from "../../types";
 import { requireAuth, validateRequest } from "../../middlewares";
 import { body } from "express-validator";
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 import { Transaction } from "../../models/Transaction";
 import { User } from "../../models";
 import { UnauthorizedError } from "../../errors";
@@ -54,7 +54,7 @@ router.post(
       // === END Add transaction
 
       // === Add user points
-      const user = await User.findById(id).session(session);
+      const user = await User.findById(id, null, { session });
       if (!user) {
         throw new UnauthorizedError();
       }
