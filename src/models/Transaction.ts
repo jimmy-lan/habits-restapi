@@ -17,7 +17,11 @@ export interface TransactionProps {
   pointsChange: number;
 }
 
-export type TransactionDocument = Document<TransactionProps>;
+export type TransactionDocument = Document<TransactionProps> & {
+  // These fields are automatically appended by mongodb.
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 const transactionSchema = new Schema<TransactionDocument>(
   {
