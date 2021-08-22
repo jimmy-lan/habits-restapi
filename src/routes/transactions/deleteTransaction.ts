@@ -30,7 +30,7 @@ router.delete(
       _id: transactionId,
       userId: user.id,
     });
-    if (!transaction) {
+    if (!transaction || transaction.isDeleted) {
       throw new NotFoundError(
         `Transaction "${transactionId}" could not be found.`
       );
