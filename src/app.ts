@@ -8,7 +8,7 @@ import morgan from "morgan";
 import "express-async-errors";
 
 // Router Imports
-import { authRouter } from "./routes";
+import { authRouter, transactionsRouter } from "./routes";
 import { handleErrors } from "./middlewares";
 import { NotFoundError } from "./errors";
 import { requireAuth, rateLimitIp } from "./middlewares";
@@ -33,7 +33,9 @@ app.use(
     },
   })
 );
-app.use(rateLimitIp);
+if (process.env.NODE_ENV !== "development") {
+  app.use(rateLimitIp);
+}
 
 // Register routers
 app.use("/api/v1/users", authRouter);
