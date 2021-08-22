@@ -9,7 +9,7 @@ import mongoose, { Schema, Document, Model, HookNextFunction } from "mongoose";
 import { PasswordEncoder } from "../services";
 import { UserRole } from "../types";
 import { tokenConfig } from "../config";
-import { Timestamp } from "../types/Timestamp";
+import { DeepRequired, Timestamp } from "../types";
 
 /**
  * Interface that describes the properties required
@@ -38,7 +38,7 @@ export interface UserProps {
  * document. Required by mongoose.
  */
 export type UserDocument = Document<UserProps> &
-  Required<UserProps> &
+  DeepRequired<UserProps> &
   Timestamp;
 
 /**

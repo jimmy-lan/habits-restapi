@@ -7,7 +7,7 @@
  */
 
 import { Document, Model, Schema } from "mongoose";
-import { Timestamp } from "../types/Timestamp";
+import { DeepRequired, Timestamp } from "../types";
 import mongoose from "mongoose";
 
 interface PropertyProps {
@@ -18,7 +18,7 @@ interface PropertyProps {
 }
 
 export type PropertyDocument = Document<PropertyProps> &
-  Required<PropertyProps> &
+  DeepRequired<PropertyProps> &
   Timestamp;
 
 const propertySchema = new Schema<PropertyDocument>(

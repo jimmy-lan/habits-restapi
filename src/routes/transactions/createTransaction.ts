@@ -14,6 +14,7 @@ import mongoose from "mongoose";
 import { Transaction } from "../../models/Transaction";
 import { User } from "../../models";
 import { UnauthorizedError } from "../../errors";
+import { Property, PropertyDocument } from "../../models/Property";
 
 const router = Router();
 
@@ -37,8 +38,7 @@ router.post(
      * We should perform the following in this function:
      * - (1) Create a new transaction for the current user, recording
      *   the title of this transaction, if given, and points change.
-     * - (2) Update the number of points that the user has in the Users
-     *   document.
+     * - (2) Update the number of points that the user has.
      * These operations should be atomic. For example, if (2) fails, we
      * should revert operation (1).
      */
@@ -58,16 +58,16 @@ router.post(
       // === END Add transaction
 
       // === Add user points
-      const user = await User.findById(id, null, { session });
-      if (!user) {
-        throw new UnauthorizedError();
+      let property = await Property.findOne({ userId: id }, null, { session });
+      if (!property) {
+        property = ((await Property.create([{ userId: id, points: 0 }], {
+          session,
+        })) as unknown) as PropertyDocument;
+        console.log(property);
       }
-      if (!user.points) {
-        user.points = 0;
-      }
-      user.points += pointsChange;
-      const savedUser = await user.save();
-      newPoints = savedUser.points;
+      property.points += pointsChange;
+      const savedProperty = await property.save();
+      newPoints = savedProperty.points;
       // === END Add user points
     });
     session.endSession();
