@@ -9,20 +9,21 @@
 import { Router, Request, Response } from "express";
 import { requireAuth, validateRequest } from "../../middlewares";
 import { ResBody } from "../../types";
-import { query } from "express-validator";
 import mongoose from "mongoose";
 import { Property, Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
+import { param } from "express-validator";
 
 const router = Router();
 
 router.delete(
   "/:transactionId",
   requireAuth,
-  [query("transactionId").notEmpty().isMongoId()],
+  [param("transactionId").notEmpty().isMongoId()],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
-    const { transactionId } = req.query;
+    const { transactionId } = req.params;
+    console.log(transactionId);
     const user = req.user!;
 
     // Find documents needed for this route
@@ -61,7 +62,7 @@ router.delete(
       // === END Soft delete transaction
 
       // === Update user points
-      property.points += transaction.pointsChange;
+      property.points -= transaction.pointsChange;
       const savedProperty = await property.save();
       newPoints = savedProperty.points;
       // === END Update user points
