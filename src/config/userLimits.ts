@@ -7,5 +7,5 @@
  * Default limits that regular users have on resources.
  */
 export const defaultUserLimits = {
-  maxTransactionCount: 1000,
+  maxTransactions: 1000,
 };
