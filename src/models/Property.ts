@@ -9,6 +9,7 @@
 import { Document, Model, Schema } from "mongoose";
 import { DeepRequired, Timestamp } from "../types";
 import mongoose from "mongoose";
+import { defaultUserLimits } from "../config";
 
 interface PropertyProps {
   /** ID of the user owning this property document. */
@@ -36,6 +37,17 @@ const propertySchema = new Schema<PropertyDocument>(
     points: {
       type: Number,
       required: true,
+      default: 0,
+    },
+    numTransactions: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    maxTransactions: {
+      type: Number,
+      required: true,
+      default: defaultUserLimits.maxTransactions,
     },
   },
   {
