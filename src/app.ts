@@ -12,6 +12,7 @@ import { authRouter, transactionsRouter } from "./routes";
 import { handleErrors } from "./middlewares";
 import { NotFoundError } from "./errors";
 import { rateLimitIp } from "./middlewares";
+import { propertiesRouter } from "./routes/properties";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use(rateLimitIp);
 // Register routers
 app.use("/api/v1/users", authRouter);
 app.use("/api/v1/transactions", transactionsRouter);
+app.use("/api/v1/properties", propertiesRouter);
 
 // Resource not found
 app.all("*", () => {
