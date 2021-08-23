@@ -62,6 +62,7 @@ router.delete(
 
       // === Update user points
       property.points -= transaction.pointsChange;
+      property.numTransactions--;
       const savedProperty = await property.save();
       newPoints = savedProperty.points;
       // === END Update user points
