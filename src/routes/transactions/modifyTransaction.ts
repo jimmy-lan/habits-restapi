@@ -52,8 +52,8 @@ router.patch(
 
     // Find transaction
     const transaction = await Transaction.findOne({
+      _id: transactionId,
       userId: user.id,
-      transactionId,
       ...notDeletedCondition,
     });
     if (!transaction) {
@@ -61,6 +61,8 @@ router.patch(
         `Transaction "${transactionId}" could not be found.`
       );
     }
+    // Create a copy of the old transaction to return.
+    const oldTransaction = transaction.toJSON();
 
     // Number of points to add to the user, as a result of this modification.
     let diffPoints = 0;
@@ -69,8 +71,9 @@ router.patch(
       diffPoints = getDiffPoints(transaction.pointsChange, pointsChange);
     }
 
-    // These values will be updated and returned
-    let newPoints = 0;
+    // Total number of points that the user has after this operation.
+    // This will be defined & returned if `diffPoints` is not 0.
+    let newPoints = undefined;
 
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
@@ -85,7 +88,7 @@ router.patch(
       // === END Update transaction document
 
       // === Update user points, if needed
-      if (pointsChange) {
+      if (diffPoints) {
         newPoints = await updateUserPoints(user.id, diffPoints);
       }
       // === END Update user points
@@ -96,6 +99,7 @@ router.patch(
       success: true,
       payload: {
         transaction,
+        updatedFrom: oldTransaction,
         points: newPoints,
       },
     });
