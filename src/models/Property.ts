@@ -15,6 +15,11 @@ interface PropertyProps {
   userId: string;
   /** Number of points that the user has. Can be positive, negative, or 0. */
   points: number;
+  /** Accumulator, recording the number of active transactions corresponding
+   * to this user.*/
+  numTransactions: number;
+  /** Maximum num of transactions that this user can have. */
+  maxTransactions: number;
 }
 
 export type PropertyDocument = Document &
