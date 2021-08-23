@@ -68,7 +68,7 @@ router.delete(
     });
     session.endSession();
 
-    return res.json({
+    return res.status(202).json({
       success: true,
       payload: {
         transaction: deletedTransaction,

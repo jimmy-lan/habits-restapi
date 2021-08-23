@@ -73,7 +73,7 @@ router.post(
     });
     session.endSession();
 
-    return res.json({
+    return res.status(201).json({
       success: true,
       payload: {
         transaction: createdTransaction,
