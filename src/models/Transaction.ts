@@ -4,7 +4,7 @@
  * Description: File holding a transaction model.
  */
 
-import mongoose, { Document, Model, Schema, ObjectId } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 import { DeepRequired, Timestamp } from "../types";
 
 export interface TransactionProps {
