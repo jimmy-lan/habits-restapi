@@ -75,7 +75,7 @@ router.post(
       const savedUser = await user.save();
 
       // Initialize user properties
-      await Property.create([{ userId: savedUser.id, points: 0 }]);
+      await Property.create([{ userId: savedUser.id }]);
     });
     session.endSession();
 
