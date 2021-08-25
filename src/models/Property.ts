@@ -75,7 +75,7 @@ propertySchema.pre<PropertyDocument>("save", async function(done: HookNextFuncti
   // If the user has the maximum transaction count, throw an error
   if (this.numTransactions > this.maxTransactions) {
     throw new UnprocessableEntityError(
-      `You reached the maximum transaction count ${this.maxTransactions}.` +
+      `You reached the maximum transaction count ${this.maxTransactions}. ` +
       "Please email Jimmy to apply for a quota increase."
     );
   }
