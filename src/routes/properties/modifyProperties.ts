@@ -43,6 +43,7 @@ router.patch("/", requireAuth, [
 
     // === Update user property
     property.points = points;
+    property.numTransactions++;
     await property.save();
     // === END Update user property
   });

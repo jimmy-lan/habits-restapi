@@ -6,10 +6,10 @@
  *   only have one property document entry.
  */
 
-import { Document, Model, Schema } from "mongoose";
+import mongoose, { Document, HookNextFunction, Model, Schema } from "mongoose";
 import { DeepRequired, Timestamp } from "../types";
-import mongoose from "mongoose";
 import { defaultUserLimits } from "../config";
+import { UnprocessableEntityError } from "../errors";
 
 interface PropertyProps {
   /** ID of the user owning this property document. */
@@ -71,6 +71,15 @@ const build = (props: PropertyProps) => {
   return new Property(props);
 };
 propertySchema.static("build", build);
+propertySchema.pre<PropertyDocument>("save", async function(done: HookNextFunction) {
+  // If the user has the maximum transaction count, throw an error
+  if (this.numTransactions >= this.maxTransactions) {
+    throw new UnprocessableEntityError(
+      `You reached the maximum transaction count ${this.maxTransactions}.` +
+      "Please email Jimmy to apply for a quota increase."
+    );
+  }
+});
 
 export const Property = mongoose.model<PropertyDocument, PropertyModel>(
   "Property",

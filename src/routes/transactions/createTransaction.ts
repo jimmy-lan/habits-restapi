@@ -11,8 +11,8 @@ import { body } from "express-validator";
 import mongoose from "mongoose";
 import { ResBody } from "../../types";
 import { requireAuth, validateRequest } from "../../middlewares";
-import { Transaction, Property } from "../../models";
-import { NotFoundError, UnprocessableEntityError } from "../../errors";
+import { Property, Transaction } from "../../models";
+import { NotFoundError } from "../../errors";
 
 const router = Router();
 
@@ -49,13 +49,6 @@ router.post(
       if (!property) {
         throw new NotFoundError(
           "Could not locate property data for the current user."
-        );
-      }
-      // If the user has the maximum transaction count, throw an error
-      if (property.numTransactions >= property.maxTransactions) {
-        throw new UnprocessableEntityError(
-          `You reached the maximum transaction count ${property.maxTransactions}.` +
-            "Please email Jimmy to apply for a quota increase."
         );
       }
 
