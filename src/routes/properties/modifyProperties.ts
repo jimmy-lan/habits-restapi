@@ -8,7 +8,7 @@ import { requireAuth, validateRequest } from "../../middlewares";
 import { body } from "express-validator";
 import mongoose from "mongoose";
 import { Property, Transaction } from "../../models";
-import { NotFoundError } from "../../errors";
+import { BadRequestError, NotFoundError } from "../../errors";
 import { ResBody } from "../../types";
 
 const router = Router();
@@ -30,6 +30,10 @@ router.patch("/", requireAuth, [
     throw new NotFoundError("Could not locate property data for current user.");
   }
   const diffPoints = points - property.points;
+  if (!diffPoints) {
+    throw new BadRequestError("New points specified must be different from the number of points " +
+      "that you currently have. You currently have " + property.points + " points.");
+  }
 
   const session = await mongoose.startSession();
   await session.withTransaction(async () => {
@@ -55,4 +59,4 @@ router.patch("/", requireAuth, [
   });
 });
 
-export {router as modifyPropertiesRouter}
+export { router as modifyPropertiesRouter };
