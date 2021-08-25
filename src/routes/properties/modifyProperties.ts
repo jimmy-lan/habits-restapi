@@ -7,8 +7,9 @@ import { Request, Response, Router } from "express";
 import { requireAuth, validateRequest } from "../../middlewares";
 import { body } from "express-validator";
 import mongoose from "mongoose";
-import { Property } from "../../models";
+import { Property, Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
+import { ResBody } from "../../types";
 
 const router = Router();
 
@@ -19,7 +20,7 @@ const router = Router();
  */
 router.patch("/", requireAuth, [
   body("points").isInt().not().isString(),
-], validateRequest, async (req: Request, res: Response) => {
+], validateRequest, async (req: Request, res: Response<ResBody>) => {
   const { points } = req.body;
   const user = req.user!;
 
@@ -33,12 +34,22 @@ router.patch("/", requireAuth, [
   const session = await mongoose.startSession();
   await session.withTransaction(async () => {
     // === Create a transaction with `diffPoints`
-
+    await Transaction.create([{
+      userId: user.id,
+      title: "Adjustment",
+      pointsChange: diffPoints,
+    }], { session });
     // === END Create a transaction with `diffPoints`
 
     // === Update user property
-
+    property.points = points;
+    await property.save();
     // === END Update user property
   });
   session.endSession();
+
+  return res.json({
+    success: true,
+    payload: property,
+  });
 });
