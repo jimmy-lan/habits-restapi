@@ -54,3 +54,5 @@ router.patch("/", requireAuth, [
     payload: property,
   });
 });
+
+export {router as modifyPropertiesRouter}
