@@ -1,7 +1,7 @@
 /*
-* Created by Jimmy Lan
-* Creation Date: 2021-08-25
-*/
+ * Created by Jimmy Lan
+ * Creation Date: 2021-08-25
+ */
 
 import { Request, Response, Router } from "express";
 import { requireAuth, validateRequest } from "../../middlewares";
@@ -18,45 +18,60 @@ const router = Router();
  * and an adjustment transaction will be created automatically to reflect
  * this.
  */
-router.patch("/", requireAuth, [
-  body("points").isInt().not().isString(),
-], validateRequest, async (req: Request, res: Response<ResBody>) => {
-  const { points } = req.body;
-  const user = req.user!;
+router.patch(
+  "/",
+  requireAuth,
+  [body("points").isInt().not().isString()],
+  validateRequest,
+  async (req: Request, res: Response<ResBody>) => {
+    const { points } = req.body;
+    const user = req.user!;
 
-  // Find difference in points
-  const property = await Property.findOne({ userId: user.id });
-  if (!property) {
-    throw new NotFoundError("Could not locate property data for current user.");
+    // Find difference in points
+    const property = await Property.findOne({ userId: user.id });
+    if (!property) {
+      throw new NotFoundError(
+        "Could not locate property data for current user."
+      );
+    }
+    const diffPoints = points - property.points;
+    if (!diffPoints) {
+      throw new BadRequestError(
+        "New points specified must be different from the number of points " +
+          "that you currently have. You currently have " +
+          property.points +
+          " points."
+      );
+    }
+
+    const session = await mongoose.startSession();
+    await session.withTransaction(async () => {
+      // === Create a transaction with `diffPoints`
+      await Transaction.create(
+        [
+          {
+            userId: user.id,
+            title: "Adjustment",
+            pointsChange: diffPoints,
+          },
+        ],
+        { session }
+      );
+      // === END Create a transaction with `diffPoints`
+
+      // === Update user property
+      property.points = points;
+      property.numTransactions++;
+      await property.save();
+      // === END Update user property
+    });
+    session.endSession();
+
+    return res.json({
+      success: true,
+      payload: property,
+    });
   }
-  const diffPoints = points - property.points;
-  if (!diffPoints) {
-    throw new BadRequestError("New points specified must be different from the number of points " +
-      "that you currently have. You currently have " + property.points + " points.");
-  }
-
-  const session = await mongoose.startSession();
-  await session.withTransaction(async () => {
-    // === Create a transaction with `diffPoints`
-    await Transaction.create([{
-      userId: user.id,
-      title: "Adjustment",
-      pointsChange: diffPoints,
-    }], { session });
-    // === END Create a transaction with `diffPoints`
-
-    // === Update user property
-    property.points = points;
-    property.numTransactions++;
-    await property.save();
-    // === END Update user property
-  });
-  session.endSession();
-
-  return res.json({
-    success: true,
-    payload: property,
-  });
-});
+);
 
 export { router as modifyPropertiesRouter };
