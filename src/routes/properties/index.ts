@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getPropertiesRouter } from "./getProperties";
-import { modifyPropertiesRouter } from "./modifyProperties";
+import { modifyPropertiesRouter } from "./updateProperties";
 
 const router = Router();
 

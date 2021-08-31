@@ -5,7 +5,7 @@
  *   Route to update a transaction and recalculate user points if needed.
  */
 
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { requireAuth, validateRequest } from "../../middlewares";
 import { body, param } from "express-validator";
 import { ResBody } from "../../types";

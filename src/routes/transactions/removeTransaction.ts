@@ -6,7 +6,7 @@
  *   accordingly.
  */
 
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import mongoose from "mongoose";
 import { param } from "express-validator";
 import { requireAuth, validateRequest } from "../../middlewares";

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { createTransactionRouter } from "./createTransaction";
-import { deleteTransactionRouter } from "./deleteTransaction";
+import { deleteTransactionRouter } from "./removeTransaction";
 import { listTransactionsRouter } from "./listTransactions";
-import { modifyTransactionRouter } from "./modifyTransaction";
+import { modifyTransactionRouter } from "./updateTransaction";
 
 const router = Router();
 
