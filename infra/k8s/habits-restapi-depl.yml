@@ -58,12 +58,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: habits-service
+  name: habits-restapi-service
 spec:
   selector:
-    app: habits
+    app: habits-restapi
   ports:
     - name: habits
       protocol: TCP
-      port: 80
-      targetPort: 3000
+      port: 5000
+      targetPort: 5000
