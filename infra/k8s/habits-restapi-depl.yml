@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: habits-restapi-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: habits-restapi
+  template:
+    metadata:
+      labels:
+        app: habits-restapi
+    spec:
+      containers:
+        - name: habits-restapi
+          image: lanyanxi/habits-restapi
+          env:
+            - name: PORT
+              value: "5000"
+            - name: NODE_ENV
+              value: "production"
+            - name: SERVER_NAME
+              value: "habits-restapi"
+            - name: DEBUG
+              value: "true"
+            - name: LOG_SERVER_NAME
+              value: "true"
+
