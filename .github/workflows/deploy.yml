@@ -1,10 +1,11 @@
 # This GitHub action will deploy the current code to a container optimized
 # compute instance.
-name: CD - Container Optimized VM
+name: CD-Kubectl Instance
 on:
   push:
     branches:
       - master
+      - feature/cd-test
 jobs:
   deploy:
     runs-on: ubuntu-18.04
@@ -17,6 +18,14 @@ jobs:
           export_default_credentials: true
       - run: gcloud -v
       - run: gcloud info
+      - run: gcloud config set compute/zone ${{ secrets.GCP_ZONE }}
 
-      - name: "Update deployment"
-        run: gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }}
+      - name: "Update deployment cluster"
+        run: |
+          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
+          ([ ! -d "habits-restapi" ] && git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi) \
+          && cd habits-restapi && git checkout master && git pull \
+          && sudo kubectl apply -f ./infra/k8s"
+
+      - name: "Prompt deployment completion"
+        run: echo "Deployment completes"
