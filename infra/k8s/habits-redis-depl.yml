@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: main-redis-depl
+  name: habits-redis-depl
 spec:
   selector:
     matchLabels:
-      app: main-redis-depl
+      app: habits-redis-depl
   template:
     metadata:
       labels:
-        app: main-redis-depl
+        app: habits-redis-depl
     spec:
       containers:
-        - name: main-redis-db
+        - name: habits-redis-db
           image: redis
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: main-redis-service
+  name: habits-redis-service
 spec:
   selector:
-    app: main-redis-db
+    app: habits-redis-db
   ports:
     - name: db
       protocol: TCP
