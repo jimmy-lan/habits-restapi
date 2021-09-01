@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: habits-redis-depl
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: habits-redis-depl
+      app: habits-redis-db
   template:
     metadata:
       labels:
-        app: habits-redis-depl
+        app: habits-redis-db
     spec:
       containers:
         - name: habits-redis-db
           image: redis
-
 ---
 apiVersion: v1
 kind: Service
