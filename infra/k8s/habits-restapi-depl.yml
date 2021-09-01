@@ -26,4 +26,44 @@ spec:
               value: "true"
             - name: LOG_SERVER_NAME
               value: "true"
-
+            - name: DB_URI
+              # We host our Mongo DB instance somewhere else for this app.
+              valueFrom:
+                secretKeyRef:
+                  name: db-uri
+                  key: DB_URI
+            - name: REDIS_URI
+              value: "redis://habits-redis-service:6379"
+            - name: ACCESS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: access-secret
+                  key: ACCESS_SECRET
+            - name: REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: refresh-secret
+                  key: REFRESH_SECRET
+            - name: RESET_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: reset-secret
+                  key: RESET_SECRET
+            - name: SENDGRID_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sendgrid-key
+                  key: SENDGRID_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: habits-service
+spec:
+  selector:
+    app: habits
+  ports:
+    - name: habits
+      protocol: TCP
+      port: 80
+      targetPort: 3000
