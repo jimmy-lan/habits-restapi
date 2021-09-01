@@ -71,15 +71,18 @@ const build = (props: PropertyProps) => {
   return new Property(props);
 };
 propertySchema.static("build", build);
-propertySchema.pre<PropertyDocument>("save", async function(done: HookNextFunction) {
-  // If the user has the maximum transaction count, throw an error
-  if (this.numTransactions > this.maxTransactions) {
-    throw new UnprocessableEntityError(
-      `You reached the maximum transaction count ${this.maxTransactions}. ` +
-      "Please email Jimmy to apply for a quota increase."
-    );
+propertySchema.pre<PropertyDocument>(
+  "save",
+  async function (done: HookNextFunction) {
+    // If the user has the maximum transaction count, throw an error
+    if (this.numTransactions > this.maxTransactions) {
+      throw new UnprocessableEntityError(
+        `You reached the maximum transaction count ${this.maxTransactions}. ` +
+          "Please email Jimmy to apply for a quota increase."
+      );
+    }
   }
-});
+);
 
 export const Property = mongoose.model<PropertyDocument, PropertyModel>(
   "Property",
