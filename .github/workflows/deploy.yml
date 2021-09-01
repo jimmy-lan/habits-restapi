@@ -22,7 +22,7 @@ jobs:
 
       - name: "Update deployment cluster"
         run: |
-          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --comand="
+          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
           ([ ! -d "habits-restapi" ] && git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi)
           && cd habits-restapi && git checkout master && git pull
           && kubectl apply -f ./infra/k8s
