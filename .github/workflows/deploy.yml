@@ -1,0 +1,22 @@
+# This GitHub action will deploy the current code to a container optimized
+# compute instance.
+name: CD - Container Optimized VM
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: "Set up gcloud"
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - run: gcloud -v
+      - run: gcloud info
+
+      - name: "Update deployment"
+        run: gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }}

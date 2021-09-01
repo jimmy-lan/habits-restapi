@@ -11,7 +11,7 @@ import { body } from "express-validator";
 import mongoose from "mongoose";
 import { ResBody } from "../../types";
 import { requireAuth, validateRequest } from "../../middlewares";
-import { Transaction, Property } from "../../models";
+import { Property, Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
 
 const router = Router();
@@ -42,6 +42,22 @@ router.post(
      */
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
+      // === Add user points
+      const property = await Property.findOne({ userId: id }, null, {
+        session,
+      });
+      if (!property) {
+        throw new NotFoundError(
+          "Could not locate property data for the current user."
+        );
+      }
+
+      property.points += pointsChange;
+      property.numTransactions++;
+      const savedProperty = await property.save();
+      newPoints = savedProperty.points;
+      // === END Add user points
+
       // === Add transaction
       createdTransaction = (
         await Transaction.create(
@@ -56,24 +72,10 @@ router.post(
         )
       )[0];
       // === END Add transaction
-
-      // === Add user points
-      const property = await Property.findOne({ userId: id }, null, {
-        session,
-      });
-      if (!property) {
-        throw new NotFoundError(
-          "Could not locate property data for the current user."
-        );
-      }
-      property.points += pointsChange;
-      const savedProperty = await property.save();
-      newPoints = savedProperty.points;
-      // === END Add user points
     });
     session.endSession();
 
-    return res.json({
+    return res.status(201).json({
       success: true,
       payload: {
         transaction: createdTransaction,

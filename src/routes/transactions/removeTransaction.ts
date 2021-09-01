@@ -6,7 +6,7 @@
  *   accordingly.
  */
 
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import mongoose from "mongoose";
 import { param } from "express-validator";
 import { requireAuth, validateRequest } from "../../middlewares";
@@ -62,13 +62,14 @@ router.delete(
 
       // === Update user points
       property.points -= transaction.pointsChange;
+      property.numTransactions--;
       const savedProperty = await property.save();
       newPoints = savedProperty.points;
       // === END Update user points
     });
     session.endSession();
 
-    return res.json({
+    return res.status(202).json({
       success: true,
       payload: {
         transaction: deletedTransaction,

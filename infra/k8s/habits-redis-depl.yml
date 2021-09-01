@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: habits-redis-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: habits-redis-db
+  template:
+    metadata:
+      labels:
+        app: habits-redis-db
+    spec:
+      containers:
+        - name: habits-redis-db
+          image: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: habits-redis-service
+spec:
+  selector:
+    app: habits-redis-db
+  ports:
+    - name: db
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
