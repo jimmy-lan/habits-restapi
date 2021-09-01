@@ -24,7 +24,8 @@ jobs:
         run: gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }}
 
       - name: "Clone repo if not exist"
-        run: [ ! -d "habits-restapi" ] && git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi
+        run: |
+          [ ! -d "habits-restapi" ] && git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi
 
       - name: "Run git pull"
         run: cd habits-cli && git pull
