@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-redis-depl
+spec:
+  selector:
+    matchLabels:
+      app: main-redis-depl
+  template:
+    metadata:
+      labels:
+        app: main-redis-depl
+    spec:
+      containers:
+        - name: main-redis-db
+          image: redis
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: main-redis-service
+spec:
+  selector:
+    app: main-redis-db
+  ports:
+    - name: db
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
