@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: habits-restapi
-          image: lanyanxi/habits-restapi
+          image: lanyanxi/habits-restapi:latest
           env:
             - name: PORT
               value: "5000"

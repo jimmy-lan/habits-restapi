@@ -1,31 +1,56 @@
 # This GitHub action will deploy the current code to a container optimized
 # compute instance.
-name: CD-Kubectl Instance
-on:
-  push:
-    branches:
-      - master
-      - feature/cd-test
-jobs:
-  deploy:
-    runs-on: ubuntu-18.04
-    steps:
-      - name: "Set up gcloud"
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
-      - run: gcloud -v
-      - run: gcloud info
-      - run: gcloud config set compute/zone ${{ secrets.GCP_ZONE }}
-
-      - name: "Update deployment cluster"
-        run: |
-          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
-          ([ ! -d "habits-restapi" ] && git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi) \
-          && cd habits-restapi && git checkout master && git pull \
-          && sudo kubectl apply -f ./infra/k8s"
-
-      - name: "Prompt deployment completion"
-        run: echo "Deployment completes"
+#name: CD-Kubectl Instance
+#on:
+#  push: {}
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-18.04
+#    steps:
+#      - name: "Set up QEMU"
+#        uses: docker/setup-qemu-action@v1
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v1
+#      - name: "Login to DockerHub"
+#        uses: docker/login-action@v1
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#      - name: "Build and push"
+#        id: docker_build
+#        uses: docker/build-push-action@v2
+#        with:
+#          push: true
+#          tags: ${{ secrets.DOCKERHUB_USERNAME }}/habits-restapi:latest
+#
+#  deploy:
+#    needs: [build]
+#    runs-on: ubuntu-18.04
+#    steps:
+#      - name: "Set up gcloud"
+#        uses: google-github-actions/setup-gcloud@master
+#        with:
+#          project_id: ${{ secrets.GCP_PROJECT_ID }}
+#          service_account_key: ${{ secrets.GCP_SA_KEY }}
+#          export_default_credentials: true
+#      - run: gcloud -v
+#      - run: gcloud info
+#      - run: gcloud config set compute/zone ${{ secrets.GCP_ZONE }}
+#
+#      - name: "Clone git repo if not exist"
+#        run: |
+#          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
+#          if [ ! -d "habits-restapi" ]; \
+#          then \
+#            git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi; \
+#          fi"
+#
+#      - name: "Update deployment configurations"
+#        run: |
+#          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
+#          cd habits-restapi && git checkout master && git pull \
+#          && sudo kubectl apply -f ./infra/k8s"
+#
+#      - name: "Prompt deployment completion"
+#        run: echo "Deployment completes"

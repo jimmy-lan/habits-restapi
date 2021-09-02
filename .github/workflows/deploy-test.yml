@@ -1,0 +1,39 @@
+# This GitHub action will deploy the current code to a container optimized
+# compute instance.
+name: CD-Docker Compose
+on:
+  push:
+    branches:
+      - master
+      - feature/cd-test
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: "Set up gcloud"
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - run: gcloud -v
+      - run: gcloud info
+      - run: gcloud config set compute/zone ${{ secrets.GCP_ZONE }}
+
+      - name: "Clone git repo if not exist"
+        run: |
+          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
+          if [ ! -d "habits-restapi" ]; \
+          then \
+            git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi; \
+          fi"
+
+      - name: "Run test server"
+        run: |
+          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
+          cd habits-restapi && git checkout master && git pull \
+          && sudo docker-compose up -d"
+
+      - name: "Prompt deployment completion"
+        run: echo "Deployment completes"
