@@ -20,6 +20,7 @@ interface InvitationProps {
   code: string;
   /** Indicates whether this invitation has been accepted. */
   isAccepted?: boolean;
+  clientIP?: string;
   /** Timestamp when the user accepted this invitation and begin their test
    * session. */
   testSessionStartAt?: Date;
@@ -41,6 +42,7 @@ const invitationSchema = new Schema<InvitationDocument>({
     type: String,
     required: true,
   },
+  clientIP: String,
   isAccepted: {
     type: Boolean,
     default: false,
