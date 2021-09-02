@@ -1,10 +1,11 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 import { validateRequest } from "../../middlewares";
-import { Invitation } from "../../models";
+import { Invitation, InvitationDocument } from "../../models";
 import { invitationIPRateLimiter } from "../../services";
 import { setRateLimitErrorHeaders } from "../../util";
-import { RateLimitedError } from "../../errors";
+import { NotFoundError, RateLimitedError } from "../../errors";
+import { ResBody } from "../../types";
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.post(
   "/activate",
   [body("email").isEmail().normalizeEmail()],
   validateRequest,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response<ResBody>) => {
     const ip = req.ip;
     const { email } = req.body;
 
@@ -29,7 +30,32 @@ router.post(
     }
 
     // Find invitation
-    const invitation = await Invitation.findOne({ email });
+    const invitation: InvitationDocument | null = await Invitation.findOne({
+      email,
+    });
+    if (!invitation || invitation.isAccepted) {
+      throw new NotFoundError(
+        `Fail to activate - ${email} does not have an invitation.`
+      );
+    }
+
+    // Update invitation
+    invitation.isAccepted = true;
+    invitation.clientIP = ip;
+    invitation.testSessionStartAt = new Date();
+    await invitation.save();
+
+    // Return some useful information
+    return res.json({
+      success: true,
+      payload: {
+        testSessionStartAt: invitation.testSessionStartAt,
+        testSessionExpireAt: invitation.testSessionExpireAt,
+        serverName: process.env.SERVER_NAME,
+        location: process.env.LOCATION,
+        email: invitation.email,
+      },
+    });
   }
 );
 
