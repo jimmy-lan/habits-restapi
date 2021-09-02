@@ -4,12 +4,11 @@
  * Description: File holding a user model.
  */
 
-import mongoose, { Schema, Document, Model, HookNextFunction } from "mongoose";
+import mongoose, { HookNextFunction, Model, Schema } from "mongoose";
 
 import { PasswordEncoder } from "../services";
-import { UserRole } from "../types";
+import { MongoDocument, UserRole } from "../types";
 import { tokenConfig } from "../config";
-import { DeepRequired, Timestamp } from "../types";
 
 /**
  * Interface that describes the properties required
@@ -37,7 +36,7 @@ export interface UserProps {
  * Interface that describes the properties in a user
  * document. Required by mongoose.
  */
-export type UserDocument = Document & DeepRequired<UserProps> & Timestamp;
+export type UserDocument = MongoDocument<UserProps>;
 
 /**
  * Schema used to model users. Required by mongoose.

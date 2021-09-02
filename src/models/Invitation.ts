@@ -5,7 +5,9 @@
  * for test server users.
  */
 
-interface Invitation {
+import { MongoDocument } from "../types";
+
+interface InvitationProps {
   /** Email of the user invited. */
   email: string;
   /** A random code to verify user's identity. This code is required when
@@ -21,3 +23,5 @@ interface Invitation {
    * will never expire. */
   testSessionExpireAt?: Date;
 }
+
+export type InvitationDocument = MongoDocument<InvitationProps>

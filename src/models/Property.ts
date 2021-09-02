@@ -6,8 +6,8 @@
  *   only have one property document entry.
  */
 
-import mongoose, { Document, HookNextFunction, Model, Schema } from "mongoose";
-import { DeepRequired, Timestamp } from "../types";
+import mongoose, { HookNextFunction, Model, Schema } from "mongoose";
+import { MongoDocument } from "../types";
 import { defaultUserLimits } from "../config";
 import { UnprocessableEntityError } from "../errors";
 
@@ -23,9 +23,7 @@ interface PropertyProps {
   maxTransactions: number;
 }
 
-export type PropertyDocument = Document &
-  DeepRequired<PropertyProps> &
-  Timestamp;
+export type PropertyDocument = MongoDocument<PropertyProps>;
 
 const propertySchema = new Schema<PropertyDocument>(
   {
@@ -81,6 +79,7 @@ propertySchema.pre<PropertyDocument>(
           "Please email Jimmy to apply for a quota increase."
       );
     }
+
   }
 );
 
