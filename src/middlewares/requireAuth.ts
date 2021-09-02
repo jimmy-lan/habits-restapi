@@ -5,13 +5,13 @@
  *   Middleware which expose route to authenticated users only.
  */
 
-import { Request, Response, NextFunction } from "express";
-import mongoose from "mongoose";
+import { NextFunction, Request, Response } from "express";
+import mongoose, { LeanDocument } from "mongoose";
 
 import { AccessTokenPayload, RefreshTokenPayload, ResBody } from "../types";
 import { TokenProcessor, userRequestRateLimiter } from "../services";
 import { RateLimitedError, UnauthorizedError } from "../errors";
-import { User } from "../models";
+import { User, UserDocument } from "../models";
 import { setRateLimitErrorHeaders, signTokens } from "../util";
 import { tokenConfig } from "../config";
 
@@ -78,9 +78,26 @@ const verifyAndUseRefreshToken = async (
   const userId = claims.sub;
 
   // Get user information
-  const user = await User.findById(userId).lean();
+  const user: LeanDocument<UserDocument> = await User.findById(
+    userId
+  ).lean<UserDocument>();
   if (!user) {
     throw new UnauthorizedError();
+  }
+
+  // Only applicable to test server users.
+  // Test server users need to be invited to our service. Users may be
+  // restricted to a window of time when they can use the service.
+  if (user.invitation?.testSessionExpireAt) {
+    const now = new Date();
+    const expireTime = new Date(user.invitation.testSessionExpireAt as Date);
+    if (expireTime <= now) {
+      throw new UnauthorizedError(
+        "Thank you for participating in the testing of the habits app. " +
+          "We are currently outside of your test session time. Your test session " +
+          `expired at "${expireTime.toString()}".`
+      );
+    }
   }
 
   // Verify refresh token
