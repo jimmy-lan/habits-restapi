@@ -9,7 +9,7 @@ import "express-async-errors";
 
 // Router Imports
 import { authRouter, invitationsRouter, transactionsRouter } from "./routes";
-import { handleErrors, rateLimitIp } from "./middlewares";
+import { handleErrors, rateLimitIp, requireAuth } from "./middlewares";
 import { NotFoundError } from "./errors";
 import { propertiesRouter } from "./routes/properties";
 
@@ -37,8 +37,8 @@ app.use(rateLimitIp);
 
 // Register routers
 app.use("/api/v1/users", authRouter);
-app.use("/api/v1/transactions", transactionsRouter);
-app.use("/api/v1/properties", propertiesRouter);
+app.use("/api/v1/transactions", requireAuth, transactionsRouter);
+app.use("/api/v1/properties", requireAuth, propertiesRouter);
 app.use("/api/v1/invitations", invitationsRouter);
 
 // Resource not found
