@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { body } from "express-validator";
 import { validateRequest } from "../../middlewares";
+import { Invitation } from "../../models";
+import { invitationIPRateLimiter } from "../../services";
+import { setRateLimitErrorHeaders } from "../../util";
+import { RateLimitedError } from "../../errors";
 
 const router = Router();
 
@@ -13,10 +17,19 @@ router.post(
   "/activate",
   [body("email").isEmail().normalizeEmail()],
   validateRequest,
-  (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    const ip = req.ip;
     const { email } = req.body;
 
+    try {
+      await invitationIPRateLimiter.consume(ip);
+    } catch (rateLimiterRes) {
+      setRateLimitErrorHeaders(res, rateLimiterRes);
+      throw new RateLimitedError();
+    }
+
     // Find invitation
+    const invitation = await Invitation.findOne({ email });
   }
 );
 
