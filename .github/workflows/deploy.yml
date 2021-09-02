@@ -43,9 +43,9 @@ jobs:
       - name: "Clone git repo if not exist"
         run: |
           gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
-          if [ ! -d "habits-restapi" ] \
+          if [ ! -d "habits-restapi" ]; \
           then \
-            git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi \
+            git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi; \
           fi"
 
       - name: "Update deployment configurations"
