@@ -12,7 +12,11 @@ import { AccessTokenPayload, RefreshTokenPayload, ResBody } from "../types";
 import { TokenProcessor, userRequestRateLimiter } from "../services";
 import { RateLimitedError, UnauthorizedError } from "../errors";
 import { User, UserDocument } from "../models";
-import { setRateLimitErrorHeaders, signTokens } from "../util";
+import {
+  ensureValidTestSession,
+  setRateLimitErrorHeaders,
+  signTokens,
+} from "../util";
 import { tokenConfig } from "../config";
 
 /**
@@ -84,20 +88,8 @@ const verifyAndUseRefreshToken = async (
   if (!user) {
     throw new UnauthorizedError();
   }
-
-  // Only applicable to test server users.
-  // Test server users need to be invited to our service. Users may be
-  // restricted to a window of time when they can use the service.
   if (user.invitation?.testSessionExpireAt) {
-    const now = new Date();
-    const expireTime = new Date(user.invitation.testSessionExpireAt as Date);
-    if (expireTime <= now) {
-      throw new UnauthorizedError(
-        "Thank you for participating in the testing of the habits app. " +
-          "We are currently outside of your test session time. Your test session " +
-          `expired at "${expireTime.toString()}".`
-      );
-    }
+    ensureValidTestSession(user.invitation.testSessionExpireAt as Date);
   }
 
   // Verify refresh token
