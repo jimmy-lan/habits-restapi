@@ -30,6 +30,11 @@ export interface UserProps {
     }>;
     avatar: string;
   }>;
+
+  invitation?: Partial<{
+    testSessionExpireAt: Date;
+    details: string;
+  }>;
 }
 
 /**
@@ -83,6 +88,15 @@ const userSchema = new Schema<UserDocument>(
         },
       },
       avatar: String,
+    },
+
+    invitation: {
+      // Cached field to improve performance on refresh token re-issue process.
+      testSessionExpireAt: Date,
+      details: {
+        type: Schema.Types.ObjectId,
+        ref: "Invitation",
+      },
     },
   },
   {
