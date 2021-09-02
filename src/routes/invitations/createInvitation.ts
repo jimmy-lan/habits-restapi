@@ -16,9 +16,9 @@ router.post(
       .optional()
       .isISO8601()
       .custom((str) => {
-        return new Date(str) >= new Date(new Date().getTime() + 60 * 1000);
+        return new Date(str) >= new Date();
       })
-      .withMessage("Session too short")
+      .withMessage("Session must expire in the future")
       .toDate(),
   ],
   validateRequest,
