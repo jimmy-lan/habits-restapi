@@ -21,6 +21,9 @@ export interface TokenPayload {
   data?: Record<string, unknown>;
 }
 
+/**
+ * Mapping token type to their corresponding default validity time.
+ */
 const TOKEN_TYPE_EXP_MAP = {
   [TokenType.access]: tokenConfig.defaultExpirations.access,
   [TokenType.refresh]: tokenConfig.defaultExpirations.refresh,
