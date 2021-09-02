@@ -21,6 +21,12 @@ export interface TokenPayload {
   data?: Record<string, unknown>;
 }
 
+const TOKEN_TYPE_EXP_MAP = {
+  [TokenType.access]: tokenConfig.defaultExpirations.access,
+  [TokenType.refresh]: tokenConfig.defaultExpirations.refresh,
+  [TokenType.reset]: tokenConfig.defaultExpirations.reset,
+};
+
 export class TokenProcessor {
   constructor(public algorithm: Algorithm) {}
 
@@ -35,17 +41,7 @@ export class TokenProcessor {
     }
 
     if (!payload.exp) {
-      switch (tokenType) {
-        case TokenType.access:
-          payload.exp = payload.iat + tokenConfig.defaultExpirations.access;
-          break;
-        case TokenType.reset:
-          payload.exp = payload.iat + tokenConfig.defaultExpirations.reset;
-          break;
-        case TokenType.refresh:
-          payload.exp = payload.iat + tokenConfig.defaultExpirations.refresh;
-          break;
-      }
+      payload.exp = payload.iat + TOKEN_TYPE_EXP_MAP[tokenType];
     }
 
     return jwt.sign(payload, secret, {
