@@ -79,7 +79,7 @@ propertySchema.pre<PropertyDocument>(
           "Please email Jimmy to apply for a quota increase."
       );
     }
-
+    done();
   }
 );
 
