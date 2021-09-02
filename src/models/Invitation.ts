@@ -1,8 +1,11 @@
 /*
- * The invitations collection is created to accommodate test server
- * requirements. Only users with invitations may sign up in test.
- * The documents in this collection also records other useful information
- * for test server users.
+ * Created by Jimmy Lan
+ * Creation Date: 2021-09-02
+ * Description:
+ *   The invitations collection is created to accommodate test server
+ *   requirements. Only users with invitations may sign up in test.
+ *   The documents in this collection also records other useful information
+ *   for test server users.
  */
 
 import { MongoDocument } from "../types";
