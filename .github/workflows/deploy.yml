@@ -40,11 +40,15 @@ jobs:
       - run: gcloud info
       - run: gcloud config set compute/zone ${{ secrets.GCP_ZONE }}
 
-      - name: "Update deployment cluster"
+      - name: "Clone git repo if not exist"
         run: |
           gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
-          ([ ! -d "habits-restapi" ] && git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi) \
-          && cd habits-restapi && git checkout master && git pull \
+          [ ! -d "habits-restapi" ] && git clone https://github.com/lanyanxiang/habits-restapi.git habits-restapi"
+
+      - name: "Update deployment configurations"
+        run: |
+          [ -d "habits-restapi" ] && gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
+          cd habits-restapi && git checkout master && git pull \
           && sudo kubectl apply -f ./infra/k8s"
 
       - name: "Prompt deployment completion"
