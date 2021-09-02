@@ -122,3 +122,27 @@ export const authBruteIPRateLimiter = new RateLimiterRedis({
   points: rateLimitConfig.authBruteForceIP.normal.points,
   duration: rateLimitConfig.authBruteForceIP.normal.duration,
 });
+
+/* ************************************************
+ * * Activate invitation IP rate limiter
+ ************************************************ */
+
+const invitationIPRateLimiterNormal = new RateLimiterRedis({
+  storeClient: redisClient,
+  keyPrefix: "invitation_ip",
+  points: rateLimitConfig.invitationIP.normal.points,
+  duration: rateLimitConfig.invitationIP.normal.duration,
+});
+
+const invitationIPRateLimiterBurst = new RateLimiterRedis({
+  storeClient: redisClient,
+  keyPrefix: "invitation_ip_burst",
+  points: rateLimitConfig.invitationIP.burst.points,
+  duration: rateLimitConfig.invitationIP.burst.duration,
+});
+
+// Rate limiter used to limit the operation of failing to activate invitations
+export const invitationIPRateLimiter = new BurstyRateLimiter(
+  invitationIPRateLimiterNormal,
+  invitationIPRateLimiterBurst
+);

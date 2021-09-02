@@ -6,3 +6,4 @@
 export * from "./User";
 export * from "./Transaction";
 export * from "./Property";
+export * from "./Invitation";

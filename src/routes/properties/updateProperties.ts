@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, Router } from "express";
-import { requireAuth, validateRequest } from "../../middlewares";
+import { validateRequest } from "../../middlewares";
 import { body } from "express-validator";
 import mongoose from "mongoose";
 import { Property, Transaction } from "../../models";
@@ -20,7 +20,6 @@ const router = Router();
  */
 router.patch(
   "/",
-  requireAuth,
   [body("points").isInt().not().isString()],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {

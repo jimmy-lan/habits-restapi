@@ -6,7 +6,7 @@
  */
 
 import { Request, Response, Router } from "express";
-import { requireAuth, validateRequest } from "../../middlewares";
+import { validateRequest } from "../../middlewares";
 import { body, param } from "express-validator";
 import { ResBody } from "../../types";
 import { Property, Transaction } from "../../models";
@@ -34,7 +34,6 @@ const getDiffPoints = (oldPoints: number, newPoints: number) => {
 
 router.patch(
   "/:transactionId",
-  requireAuth,
   [
     param("transactionId").notEmpty().isMongoId(),
     body("title")

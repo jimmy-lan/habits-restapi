@@ -10,7 +10,7 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 import mongoose from "mongoose";
 import { ResBody } from "../../types";
-import { requireAuth, validateRequest } from "../../middlewares";
+import { validateRequest } from "../../middlewares";
 import { Property, Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
 
@@ -18,7 +18,6 @@ const router = Router();
 
 router.post(
   "/",
-  requireAuth,
   [
     body("title").optional().isString().isLength({ min: 2, max: 80 }),
     body("pointsChange").isInt().not().equals("0").not().isString(),

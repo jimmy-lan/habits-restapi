@@ -21,6 +21,15 @@ export interface TokenPayload {
   data?: Record<string, unknown>;
 }
 
+/**
+ * Mapping token type to their corresponding default validity time.
+ */
+const TOKEN_TYPE_EXP_MAP = {
+  [TokenType.access]: tokenConfig.defaultExpirations.access,
+  [TokenType.refresh]: tokenConfig.defaultExpirations.refresh,
+  [TokenType.reset]: tokenConfig.defaultExpirations.reset,
+};
+
 export class TokenProcessor {
   constructor(public algorithm: Algorithm) {}
 
@@ -35,21 +44,7 @@ export class TokenProcessor {
     }
 
     if (!payload.exp) {
-      switch (tokenType) {
-        case TokenType.access:
-          // Set 5 minute expiration time for access tokens
-          payload.exp = payload.iat + tokenConfig.defaultExpirations.access;
-          // payload.exp = payload.iat + 5 * 60 * 1000;
-          break;
-        case TokenType.reset:
-          // Set 10 minute expiration time for password reset
-          payload.exp = payload.iat + tokenConfig.defaultExpirations.reset;
-          break;
-        case TokenType.refresh:
-          // Set 7 day expiration time for refresh tokens
-          payload.exp = payload.iat + tokenConfig.defaultExpirations.refresh;
-          break;
-      }
+      payload.exp = payload.iat + TOKEN_TYPE_EXP_MAP[tokenType];
     }
 
     return jwt.sign(payload, secret, {

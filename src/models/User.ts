@@ -4,12 +4,17 @@
  * Description: File holding a user model.
  */
 
-import mongoose, { Schema, Document, Model, HookNextFunction } from "mongoose";
+import mongoose, {
+  HookNextFunction,
+  LeanDocument,
+  Model,
+  Schema,
+} from "mongoose";
 
 import { PasswordEncoder } from "../services";
-import { UserRole } from "../types";
+import { MongoDocument, UserRole } from "../types";
 import { tokenConfig } from "../config";
-import { DeepRequired, Timestamp } from "../types";
+import { InvitationDocument } from "./Invitation";
 
 /**
  * Interface that describes the properties required
@@ -31,13 +36,18 @@ export interface UserProps {
     }>;
     avatar: string;
   }>;
+
+  invitation?: Partial<{
+    testSessionExpireAt: Date;
+    details: LeanDocument<InvitationDocument>;
+  }>;
 }
 
 /**
  * Interface that describes the properties in a user
  * document. Required by mongoose.
  */
-export type UserDocument = Document & DeepRequired<UserProps> & Timestamp;
+export type UserDocument = MongoDocument<UserProps>;
 
 /**
  * Schema used to model users. Required by mongoose.
@@ -84,6 +94,15 @@ const userSchema = new Schema<UserDocument>(
         },
       },
       avatar: String,
+    },
+
+    invitation: {
+      // Cached field to improve performance on refresh token re-issue process.
+      testSessionExpireAt: Date,
+      details: {
+        type: Schema.Types.ObjectId,
+        ref: "Invitation",
+      },
     },
   },
   {

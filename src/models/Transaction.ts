@@ -4,8 +4,8 @@
  * Description: File holding a transaction model.
  */
 
-import mongoose, { Document, Model, Schema } from "mongoose";
-import { DeepRequired, Timestamp } from "../types";
+import mongoose, { Model, Schema } from "mongoose";
+import { MongoDocument } from "../types";
 
 export interface TransactionProps {
   /** ID of the user who owns this transaction. */
@@ -18,9 +18,7 @@ export interface TransactionProps {
   isDeleted?: boolean;
 }
 
-export type TransactionDocument = Document &
-  DeepRequired<TransactionProps> &
-  Timestamp;
+export type TransactionDocument = MongoDocument<TransactionProps>;
 
 const transactionSchema = new Schema<TransactionDocument>(
   {

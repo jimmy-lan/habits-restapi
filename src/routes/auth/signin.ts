@@ -3,7 +3,7 @@
  * Creation Date: 2021-03-09
  */
 
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 
 import { validateRequest } from "../../middlewares";
@@ -15,7 +15,11 @@ import {
   signInRateLimiter,
 } from "../../services";
 import { AuthResBody } from "../../types";
-import { setRateLimitErrorHeaders, signTokens } from "../../util";
+import {
+  ensureValidTestSession,
+  setRateLimitErrorHeaders,
+  signTokens,
+} from "../../util";
 
 const router = Router();
 
@@ -49,7 +53,6 @@ router.post(
 
     // Find user
     const existingUser = await User.findOne({ email });
-
     if (!existingUser) {
       throw new UnauthorizedError(invalidCredentialsMessage);
     }
@@ -62,6 +65,9 @@ router.post(
     if (!isMatch) {
       throw new UnauthorizedError(invalidCredentialsMessage);
     }
+
+    // Ensure valid user testing session
+    ensureValidTestSession(existingUser);
 
     // Clear rate limit
     await signInRateLimiter.delete(emailIpPair);
