@@ -6,7 +6,7 @@
  */
 
 import { MongoDocument } from "../types";
-import { Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 
 interface InvitationProps {
   /** Email of the user invited. */
@@ -45,3 +45,17 @@ const invitationSchema = new Schema<InvitationDocument>({
   testSessionStartAt: Date,
   testSessionExpireAt: Date,
 });
+
+export interface InvitationModel extends Model<InvitationDocument> {
+  build(props: InvitationProps): InvitationDocument;
+}
+
+const build = (props: InvitationProps) => {
+  return new Invitation(props);
+};
+invitationSchema.static("build", build);
+
+export const Invitation = mongoose.model<InvitationDocument, InvitationModel>(
+  "Invitation",
+  invitationSchema
+);
