@@ -32,8 +32,8 @@ export const tokenConfig: TokenConfig = {
     reset: "HS256",
   },
   defaultExpirations: {
-    access: 5 * 60 * 60 * 1000,
+    access: 5 * 60 * 1000,
     refresh: 7 * 24 * 60 * 60 * 1000,
-    reset: 10 * 60 * 60 * 1000,
+    reset: 10 * 60 * 1000,
   },
 };
