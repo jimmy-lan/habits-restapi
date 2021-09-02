@@ -88,9 +88,8 @@ const verifyAndUseRefreshToken = async (
   if (!user) {
     throw new UnauthorizedError();
   }
-  if (user.invitation?.testSessionExpireAt) {
-    ensureValidTestSession(user.invitation.testSessionExpireAt as Date);
-  }
+
+  ensureValidTestSession(user);
 
   // Verify refresh token
   const clientSecret = user.clientSecret;
