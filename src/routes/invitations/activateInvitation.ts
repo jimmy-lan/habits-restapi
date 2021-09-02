@@ -52,7 +52,8 @@ router.post(
         testSessionStartAt: invitation.testSessionStartAt,
         testSessionExpireAt: invitation.testSessionExpireAt,
         serverName: process.env.SERVER_NAME,
-        location: process.env.LOCATION,
+        serverLocation: process.env.LOCATION,
+        testPhase: process.env.TEST_PHASE,
         email: invitation.email,
       },
     });
