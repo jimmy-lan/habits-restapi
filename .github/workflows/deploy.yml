@@ -1,10 +1,18 @@
 # This GitHub action will deploy the current code to a container optimized
 # compute instance.
-#name: CD-Kubectl Instance
-#on:
-#  push: {}
-#
-#jobs:
+name: CD-Kubectl Instance
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  prompt:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: "Prompt"
+        run: echo "This workflow is not applicable in the testing phases."
+
 #  build:
 #    runs-on: ubuntu-18.04
 #    steps:
