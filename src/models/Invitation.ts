@@ -31,25 +31,38 @@ interface InvitationProps {
 
 export type InvitationDocument = MongoDocument<InvitationProps>;
 
-const invitationSchema = new Schema<InvitationDocument>({
-  email: {
-    type: String,
-    lowercase: true,
-    required: true,
-    unique: true,
+const invitationSchema = new Schema<InvitationDocument>(
+  {
+    email: {
+      type: String,
+      lowercase: true,
+      required: true,
+      unique: true,
+    },
+    code: {
+      type: String,
+      required: true,
+    },
+    clientIP: String,
+    isAccepted: {
+      type: Boolean,
+      default: false,
+    },
+    testSessionStartAt: Date,
+    testSessionExpireAt: Date,
   },
-  code: {
-    type: String,
-    required: true,
-  },
-  clientIP: String,
-  isAccepted: {
-    type: Boolean,
-    default: false,
-  },
-  testSessionStartAt: Date,
-  testSessionExpireAt: Date,
-});
+  {
+    timestamps: true,
+    toJSON: {
+      transform(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+      },
+      versionKey: false,
+    },
+  }
+);
 
 export interface InvitationModel extends Model<InvitationDocument> {
   build(props: InvitationProps): InvitationDocument;
