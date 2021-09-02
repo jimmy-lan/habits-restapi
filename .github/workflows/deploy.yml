@@ -24,9 +24,10 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: user/app:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/habits-restapi:latest
 
   deploy:
+    needs: [build]
     runs-on: ubuntu-18.04
     steps:
       - name: "Set up gcloud"
