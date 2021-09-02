@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { requireAuth, requireRoles, validateRequest } from "../../middlewares";
+import { requireRoles, validateRequest } from "../../middlewares";
 import { UserRole } from "../../types";
 import { body } from "express-validator";
 
@@ -7,7 +7,6 @@ const router = Router();
 
 router.post(
   "/",
-  requireAuth,
   requireRoles([UserRole.admin]),
   [
     body("email").isEmail().normalizeEmail(),
