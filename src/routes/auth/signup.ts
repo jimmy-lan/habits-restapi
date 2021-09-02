@@ -7,9 +7,9 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 
 import { AuthResBody, UserRole } from "../../types";
-import { Property, User } from "../../models";
+import { Invitation, InvitationDocument, Property, User } from "../../models";
 import { validateRequest } from "../../middlewares";
-import { BadRequestError } from "../../errors";
+import { BadRequestError, UnprocessableEntityError } from "../../errors";
 import { PasswordEncoder } from "../../services";
 import { signTokens } from "../../util";
 import { tokenConfig } from "../../config";
@@ -31,6 +31,36 @@ const abortIfUserExists = async (email: string) => {
     const errorMessage = `Email ${email} is in use.`;
     throw new BadRequestError(errorMessage);
   }
+};
+
+/**
+ * Used by test server only. Checks if `email` has an invitation to register.
+ * If not, throw an appropriate `UnprocessableEntityError`. Otherwise, return
+ * the invitation document for this `email`.
+ * @param email
+ * @throws UnprocessableEntityError
+ */
+const checkInvitation = async (email: string) => {
+  const invitation: InvitationDocument | null = await Invitation.findOne({
+    email,
+  });
+  if (!invitation) {
+    throw new UnprocessableEntityError(
+      "Thank you for your interest in the habits app! " +
+        "We are currently doing closed alpha and beta testing at the moment, " +
+        "and user testing individuals must have an invitation in order " +
+        "to sign up. Please contact jimmylanbcn@gmail.com to apply for " +
+        "participation. Thank you!"
+    );
+  }
+  if (!invitation.isAccepted) {
+    throw new UnprocessableEntityError(
+      "Welcome! Please activate your invitation before signing up. " +
+        "On habits CLI, " +
+        `you may run "habits invitation activate ${email}" to proceed. `
+    );
+  }
+  return invitation;
 };
 
 router.post(
