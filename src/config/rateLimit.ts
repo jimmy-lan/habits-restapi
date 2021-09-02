@@ -73,4 +73,14 @@ export const rateLimitConfig = {
       duration: 24 * 60 * 60,
     },
   },
+  invitationIP: {
+    normal: {
+      points: 2,
+      duration: 10 * 60,
+    },
+    burst: {
+      points: 1,
+      duration: 30 * 60,
+    },
+  },
 };

@@ -9,7 +9,7 @@
 import { Request, Response, Router } from "express";
 import mongoose from "mongoose";
 import { param } from "express-validator";
-import { requireAuth, validateRequest } from "../../middlewares";
+import { validateRequest } from "../../middlewares";
 import { ResBody } from "../../types";
 import { Property, Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
@@ -18,7 +18,6 @@ const router = Router();
 
 router.delete(
   "/:transactionId",
-  requireAuth,
   [param("transactionId").notEmpty().isMongoId()],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {

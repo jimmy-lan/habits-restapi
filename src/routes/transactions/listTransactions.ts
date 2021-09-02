@@ -6,8 +6,8 @@
  *   Currently listing from the most recent to the least recent.
  */
 
-import { Router, Request, Response } from "express";
-import { requireAuth, validateRequest } from "../../middlewares";
+import { Request, Response, Router } from "express";
+import { validateRequest } from "../../middlewares";
 import { query } from "express-validator";
 import { Transaction } from "../../models";
 import { notDeletedCondition } from "../../util";
@@ -17,7 +17,6 @@ const router = Router();
 
 router.get(
   "/",
-  requireAuth,
   [
     query("limit").optional().isInt({ gt: 0 }),
     query("skip").optional().isInt({ gt: 0 }),

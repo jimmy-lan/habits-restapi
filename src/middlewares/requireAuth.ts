@@ -5,14 +5,18 @@
  *   Middleware which expose route to authenticated users only.
  */
 
-import { Request, Response, NextFunction } from "express";
-import mongoose from "mongoose";
+import { NextFunction, Request, Response } from "express";
+import mongoose, { LeanDocument } from "mongoose";
 
 import { AccessTokenPayload, RefreshTokenPayload, ResBody } from "../types";
 import { TokenProcessor, userRequestRateLimiter } from "../services";
 import { RateLimitedError, UnauthorizedError } from "../errors";
-import { User } from "../models";
-import { setRateLimitErrorHeaders, signTokens } from "../util";
+import { User, UserDocument } from "../models";
+import {
+  ensureValidTestSession,
+  setRateLimitErrorHeaders,
+  signTokens,
+} from "../util";
 import { tokenConfig } from "../config";
 
 /**
@@ -78,10 +82,14 @@ const verifyAndUseRefreshToken = async (
   const userId = claims.sub;
 
   // Get user information
-  const user = await User.findById(userId).lean();
+  const user: LeanDocument<UserDocument> = await User.findById(
+    userId
+  ).lean<UserDocument>();
   if (!user) {
     throw new UnauthorizedError();
   }
+
+  ensureValidTestSession(user);
 
   // Verify refresh token
   const clientSecret = user.clientSecret;
