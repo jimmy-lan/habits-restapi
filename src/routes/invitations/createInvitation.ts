@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { requireRoles, validateRequest } from "../../middlewares";
-import { UserRole } from "../../types";
+import { ResBody, UserRole } from "../../types";
 import { body } from "express-validator";
 
 const router = Router();
@@ -12,18 +12,20 @@ router.post(
     body("email").isEmail().normalizeEmail(),
     body("sessionExpireAt")
       .optional()
-      .isDate()
-      .toDate()
-      .custom((sessionExpireAt) => {
-        if (sessionExpireAt < new Date(new Date().getTime() + 5 * 1000)) {
-          throw new Error("Session too short.");
-        }
-      }),
+      .isISO8601()
+      .custom((str) => {
+        return new Date(str) >= new Date(new Date().getTime() + 60 * 1000);
+      })
+      .withMessage("Session too short")
+      .toDate(),
   ],
   validateRequest,
-  (req: Request, res: Response) => {
+  (req: Request, res: Response<ResBody>) => {
     const { email, sessionExpireAt } = req.body;
-    console.log(sessionExpireAt);
+
+    return res.status(201).json({
+      success: true,
+    });
   }
 );
 
