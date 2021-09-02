@@ -26,3 +26,5 @@ router.post(
     console.log(sessionExpireAt);
   }
 );
+
+export { router as createInvitationRouter };
