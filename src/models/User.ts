@@ -4,11 +4,17 @@
  * Description: File holding a user model.
  */
 
-import mongoose, { HookNextFunction, Model, Schema } from "mongoose";
+import mongoose, {
+  HookNextFunction,
+  LeanDocument,
+  Model,
+  Schema,
+} from "mongoose";
 
 import { PasswordEncoder } from "../services";
 import { MongoDocument, UserRole } from "../types";
 import { tokenConfig } from "../config";
+import { InvitationDocument } from "./Invitation";
 
 /**
  * Interface that describes the properties required
@@ -33,7 +39,7 @@ export interface UserProps {
 
   invitation?: Partial<{
     testSessionExpireAt: Date;
-    details: string;
+    details: LeanDocument<InvitationDocument>;
   }>;
 }
 

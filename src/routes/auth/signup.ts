@@ -11,7 +11,7 @@ import { Invitation, InvitationDocument, Property, User } from "../../models";
 import { validateRequest } from "../../middlewares";
 import { BadRequestError, UnprocessableEntityError } from "../../errors";
 import { PasswordEncoder } from "../../services";
-import { signTokens } from "../../util";
+import { ensureValidTestSession, signTokens } from "../../util";
 import { tokenConfig } from "../../config";
 import mongoose from "mongoose";
 
@@ -89,6 +89,9 @@ router.post(
 
     await abortIfUserExists(email);
 
+    // Check user invitation
+    const invitation = await checkInvitation(email);
+
     const user = User.build({
       email,
       password,
@@ -97,7 +100,14 @@ router.post(
       ),
       profile: { name: { first: firstName, last: lastName } },
       role: UserRole.member,
+      invitation: {
+        testSessionExpireAt: invitation.testSessionExpireAt as Date,
+        details: invitation,
+      },
     });
+
+    // Test server only
+    ensureValidTestSession(user);
 
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
