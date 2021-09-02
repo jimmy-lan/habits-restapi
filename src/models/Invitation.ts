@@ -6,6 +6,7 @@
  */
 
 import { MongoDocument } from "../types";
+import { Schema } from "mongoose";
 
 interface InvitationProps {
   /** Email of the user invited. */
@@ -15,7 +16,7 @@ interface InvitationProps {
    * is outside the scope of this program. */
   code: string;
   /** Indicates whether this invitation has been accepted. */
-  isAccepted: boolean;
+  isAccepted?: boolean;
   /** Timestamp when the user accepted this invitation and begin their test
    * session. */
   testSessionStartAt?: Date;
@@ -24,4 +25,23 @@ interface InvitationProps {
   testSessionExpireAt?: Date;
 }
 
-export type InvitationDocument = MongoDocument<InvitationProps>
+export type InvitationDocument = MongoDocument<InvitationProps>;
+
+const invitationSchema = new Schema<InvitationDocument>({
+  email: {
+    type: String,
+    lowercase: true,
+    required: true,
+    unique: true,
+  },
+  code: {
+    type: String,
+    required: true,
+  },
+  isAccepted: {
+    type: Boolean,
+    default: false,
+  },
+  testSessionStartAt: Date,
+  testSessionExpireAt: Date,
+});
