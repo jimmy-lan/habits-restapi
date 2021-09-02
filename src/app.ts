@@ -8,10 +8,9 @@ import morgan from "morgan";
 import "express-async-errors";
 
 // Router Imports
-import { authRouter, transactionsRouter } from "./routes";
-import { handleErrors } from "./middlewares";
+import { authRouter, invitationsRouter, transactionsRouter } from "./routes";
+import { handleErrors, rateLimitIp } from "./middlewares";
 import { NotFoundError } from "./errors";
-import { rateLimitIp } from "./middlewares";
 import { propertiesRouter } from "./routes/properties";
 
 const app = express();
@@ -40,6 +39,7 @@ app.use(rateLimitIp);
 app.use("/api/v1/users", authRouter);
 app.use("/api/v1/transactions", transactionsRouter);
 app.use("/api/v1/properties", propertiesRouter);
+app.use("/api/v1/invitations", invitationsRouter);
 
 // Resource not found
 app.all("*", () => {
