@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   web:
-    image: "lanyanxi/habits-restapi"
+    image: "lanyanxi/habits-restapi:latest"
     container_name: habits-restapi
     environment:
       - REDIS_URI=redis://cache
