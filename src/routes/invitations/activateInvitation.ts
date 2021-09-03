@@ -19,7 +19,7 @@ router.post(
   [body("email").isEmail().normalizeEmail()],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
-    const ip = req.ip;
+    const ip = req.clientIp!;
     const { email } = req.body;
 
     try {

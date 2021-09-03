@@ -5,7 +5,7 @@
 
 import { Request, Response, Router } from "express";
 
-import { ResetTokenPayload, ResBody } from "../../types";
+import { ResBody, ResetTokenPayload } from "../../types";
 import { body, param } from "express-validator";
 import { validateRequest } from "../../middlewares";
 import {
@@ -25,7 +25,7 @@ import { resetPasswordConfig, tokenConfig } from "../../config";
 const router = Router();
 
 const checkRateLimit = async (req: Request, res: Response) => {
-  const ip = req.ip;
+  const ip = req.clientIp!;
   const { email } = req.body;
   const emailIPKey = `${email}${ip}`;
 
@@ -45,7 +45,7 @@ const clearRateLimit = async (
   req: Request,
   user: LeanDocument<UserDocument>
 ) => {
-  const ip = req.ip;
+  const ip = req.clientIp!;
   const emailIpPair = `${user.email}${ip}`;
   await authBruteIPRateLimiter.delete(ip);
   await signInRateLimiter.delete(emailIpPair);

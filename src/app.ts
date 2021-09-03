@@ -4,6 +4,7 @@
  */
 
 import express from "express";
+import requestIp from "request-ip";
 import morgan from "morgan";
 import "express-async-errors";
 
@@ -34,6 +35,7 @@ app.use(
     },
   })
 );
+app.use(requestIp.mw());
 app.use(rateLimitIp);
 
 // Register routers
