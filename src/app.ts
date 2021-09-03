@@ -18,6 +18,7 @@ const app = express();
 // App settings
 app.set("port", process.env.PORT || 3000);
 app.set("env", process.env.NODE_ENV || app.get("env"));
+app.enable("trust proxy");
 
 // Middlewares
 app.use(express.json());
