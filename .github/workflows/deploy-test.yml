@@ -33,7 +33,7 @@ jobs:
         run: |
           gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
           cd habits-restapi && git checkout master && sudo git pull \
-          && docker build -t lanyanxi/habits-restapi:latest .
+          && docker build -t lanyanxi/habits-restapi:latest . \
           && sudo docker-compose -f docker-compose.test.yml up -d"
 
       - name: "Prompt deployment completion"
