@@ -34,7 +34,7 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response<AuthResBody>) => {
-    const ip = req.ip;
+    const ip = req.clientIp!;
     const { email, password } = req.body;
     const emailIpPair = `${email}${ip}`;
     const invalidCredentialsMessage = "Invalid email or password.";

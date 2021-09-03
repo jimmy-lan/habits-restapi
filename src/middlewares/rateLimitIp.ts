@@ -4,7 +4,7 @@
  * Description: Middleware to apply rate limiter on ip address.
  */
 
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ipRateLimiter } from "../services";
 import { setRateLimitErrorHeaders } from "../util";
 import { RateLimitedError } from "../errors";
@@ -14,7 +14,7 @@ export const rateLimitIp = async (
   res: Response,
   next: NextFunction
 ) => {
-  const ip = req.ip;
+  const ip = req.clientIp!;
 
   try {
     await ipRateLimiter.consume(ip);
