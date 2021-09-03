@@ -22,7 +22,7 @@ router.get(
     return res.json({
       success: true,
       payload: {
-        code: user.invitation?.details.code,
+        code: user.invitation?.details?.code,
       },
     });
   }
