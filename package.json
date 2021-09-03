@@ -63,6 +63,7 @@
     "mongoose": "^5.13.7",
     "morgan": "^1.10.0",
     "rate-limiter-flexible": "^2.2.1",
-    "redis": "^3.0.2"
+    "redis": "^3.0.2",
+    "request-ip": "^2.1.3"
   }
 }
