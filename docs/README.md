@@ -1,10 +1,10 @@
-# Authentication Server
+# Habits Rest API
 
-?> Author: Jimmy Lan, Date Created: 2021-03-12, Last Updated: 2021-05-03
+?> Author: Jimmy Lan
 
 ---
 
-> In this article, we will go over some high-level details of this node.js authentication template. If you are currently reading this document on GitHub, please note that you could [read this documentation on our website](https://lanyanxiang.github.io/node-authentication-starter/) for better experience.
+> In this article, we will go over some high-level details of this repository. If you are currently reading this document on GitHub, please note that you could [read this documentation on our website](https://lanyanxiang.github.io/habits-restapi/) for better experience.
 > We will explore:
 >
 > - [Overview](#overview)
@@ -16,14 +16,14 @@
 
 ## Overview
 
-This repository includes the necessary files to quickly bootstrap a [Node.js](https://nodejs.org/en/) server that has [authentication](https://en.wikipedia.org/wiki/Authentication) functionalities built-in.
+> This project is bootstrapped using [node authentication starter](https://github.com/lanyanxiang/node-authentication-starter) written by me.
+> For more information on this starter code, please visit https://lanyanxiang.github.io/node-authentication-starter.
 
-The server is capable to perform basic authentication strategy, bearer authentication strategy (through refresh tokens), and [OAuth](https://oauth.net/2/).
+This repository includes a [Node.js](https://nodejs.org/en/) server for the habits application.
+
+The server is capable to perform basic authentication strategy, bearer authentication strategy (through refresh tokens), <strike>and [OAuth](https://oauth.net/2/) </strike> (not yet available in this version of code).
 
 [Rate limiting](https://en.wikipedia.org/wiki/Rate_limiting) techniques are also implemented and will be explained in [this page](onboard/rate-limiters.md) of this documentation.
-
-The project uses [Typescript](https://www.typescriptlang.org/) and **is opinionated**.
-It is initially meant to serve as a starting point for personal and enterprise [Node.js](https://nodejs.org/en/) projects inside of [Poly Team Solutions](https://github.com/Poly-Team).
 
 ## License and Contribution Note
 
