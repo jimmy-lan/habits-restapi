@@ -8,27 +8,7 @@ on:
       - feature/cd-test
 
 jobs:
-  build:
-    runs-on: ubuntu-18.04
-    steps:
-      - name: "Set up QEMU"
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: "Login to DockerHub"
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: "Build and push"
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/habits-restapi:latest
-
   deploy:
-    needs: [build]
     runs-on: ubuntu-18.04
     steps:
       - name: "Set up gcloud"
@@ -53,6 +33,7 @@ jobs:
         run: |
           gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --command="
           cd habits-restapi && git checkout master && sudo git pull \
+          && docker build -t lanyanxi/habits-restapi:latest .
           && sudo docker-compose -f docker-compose.test.yml up -d"
 
       - name: "Prompt deployment completion"
