@@ -28,6 +28,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/habits-restapi:latest
 
   deploy:
+    needs: [build]
     runs-on: ubuntu-18.04
     steps:
       - name: "Set up gcloud"
