@@ -20,7 +20,7 @@ router.post(
   "/",
   [
     body("title").optional().isString().isLength({ min: 2, max: 80 }),
-    body("pointsChange").isInt().not().equals("0").not().isString(),
+    body("pointsChange").isNumeric().not().equals("0").not().isString(),
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {

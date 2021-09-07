@@ -20,7 +20,7 @@ const router = Router();
  */
 router.patch(
   "/",
-  [body("points").isInt().not().isString()],
+  [body("points").isNumeric().not().isString()],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { points } = req.body;

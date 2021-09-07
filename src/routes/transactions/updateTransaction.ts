@@ -41,7 +41,13 @@ router.patch(
       .notEmpty()
       .isString()
       .isLength({ min: 2, max: 80 }),
-    body("pointsChange").optional().isInt().not().equals("0").not().isString(),
+    body("pointsChange")
+      .optional()
+      .isNumeric()
+      .not()
+      .equals("0")
+      .not()
+      .isString(),
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
