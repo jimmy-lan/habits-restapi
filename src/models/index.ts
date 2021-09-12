@@ -6,4 +6,5 @@
 export * from "./User";
 export * from "./Transaction";
 export * from "./Property";
+export * from "./Quota";
 export * from "./Invitation";
