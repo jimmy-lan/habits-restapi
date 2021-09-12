@@ -66,3 +66,8 @@ const quotaSchema = new Schema<QuotaDocument>(
 export interface QuotaModel extends Model<QuotaDocument> {
   build(props: QuotaProps): QuotaDocument;
 }
+
+const build = (props: QuotaProps) => {
+  return new Quota(props);
+};
+quotaSchema.static("build", build);
