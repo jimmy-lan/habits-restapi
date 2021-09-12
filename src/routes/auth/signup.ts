@@ -7,7 +7,7 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 
 import { AuthResBody, UserRole } from "../../types";
-import { Invitation, InvitationDocument, Property, User } from "../../models";
+import { Invitation, InvitationDocument, User } from "../../models";
 import { validateRequest } from "../../middlewares";
 import { BadRequestError, UnprocessableEntityError } from "../../errors";
 import { PasswordEncoder } from "../../services";
@@ -113,9 +113,6 @@ router.post(
     await session.withTransaction(async () => {
       // Save new user
       const savedUser = await user.save();
-
-      // Initialize user properties
-      await Property.create([{ userId: savedUser.id }]);
     });
     session.endSession();
 
