@@ -13,7 +13,7 @@
 // after scheduled checks are completed.
 
 import { MongoDocument } from "../types";
-import { Model, Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 import { defaultQuota } from "../config";
 
 interface QuotaProps {
@@ -71,3 +71,8 @@ const build = (props: QuotaProps) => {
   return new Quota(props);
 };
 quotaSchema.static("build", build);
+
+export const Quota = mongoose.model<QuotaDocument, QuotaModel>(
+  "Quota",
+  quotaSchema
+);
