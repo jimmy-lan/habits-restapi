@@ -39,13 +39,26 @@ const getQuotaField = (defaultValue?: number) => ({
   default: defaultValue || 0,
 });
 
-const quotaSchema = new Schema<QuotaDocument>({
-  numDeletedTransactions: getQuotaField(),
-  maxDeletedTransactions: getQuotaField(defaultQuota.maxDeletedTransactions),
-  numTransactions: getQuotaField(),
-  maxTransactions: getQuotaField(defaultQuota.maxTransactions),
-  numDeletedProperties: getQuotaField(),
-  maxDeletedProperties: getQuotaField(defaultQuota.maxDeletedProperties),
-  numProperties: getQuotaField(),
-  maxProperties: getQuotaField(defaultQuota.maxProperties),
-});
+const quotaSchema = new Schema<QuotaDocument>(
+  {
+    numDeletedTransactions: getQuotaField(),
+    maxDeletedTransactions: getQuotaField(defaultQuota.maxDeletedTransactions),
+    numTransactions: getQuotaField(),
+    maxTransactions: getQuotaField(defaultQuota.maxTransactions),
+    numDeletedProperties: getQuotaField(),
+    maxDeletedProperties: getQuotaField(defaultQuota.maxDeletedProperties),
+    numProperties: getQuotaField(),
+    maxProperties: getQuotaField(defaultQuota.maxProperties),
+  },
+  {
+    timestamps: true,
+    toJSON: {
+      transform(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+      },
+      versionKey: false,
+    },
+  }
+);
