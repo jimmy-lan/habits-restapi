@@ -27,6 +27,7 @@ interface PropertyProps {
    * by the amount that the user obtains. When this number drops to zero,
    * the user may not obtain more counts of this property. */
   numInStock?: number;
+  isDeleted?: boolean;
 }
 
 export type PropertyDocument = MongoDocument<PropertyProps>;
@@ -50,6 +51,7 @@ const propertySchema = new Schema<PropertyDocument>(
       default: 0,
     },
     numInStock: Number,
+    isDeleted: Boolean,
   },
   {
     timestamps: true,
