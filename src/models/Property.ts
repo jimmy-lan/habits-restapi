@@ -11,6 +11,9 @@ import { MongoDocument } from "../types";
 import { defaultUserLimits } from "../config";
 import { UnprocessableEntityError } from "../errors";
 
+// TODO Fix all `numTransactions` and `maxTransactions` usage from the old
+// `Property` model.
+
 interface PropertyProps {
   /** ID of the user owning this property document. */
   userId: string;
