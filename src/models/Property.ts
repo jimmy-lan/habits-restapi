@@ -8,15 +8,25 @@
 
 import mongoose, { HookNextFunction, Model, Schema } from "mongoose";
 import { MongoDocument } from "../types";
-import { defaultUserLimits } from "../config";
 import { UnprocessableEntityError } from "../errors";
 
 // TODO Fix all `numTransactions` and `maxTransactions` usage from the old
-// `Property` model.
+//   `Property` model.
 
 interface PropertyProps {
   /** ID of the user owning this property document. */
   userId: string;
+  /** Name of property. */
+  name: string;
+  /** Description of property. */
+  description?: string;
+  /** Number of this property own by user. */
+  numOwn: number;
+  /** Number of this property available to be obtained by the user.
+   * Whenever the user obtains this property, this number will be reduced
+   * by the amount that the user obtains. When this number drops to zero,
+   * the user may not obtain more counts of this property. */
+  numInStock?: number;
 }
 
 export type PropertyDocument = MongoDocument<PropertyProps>;
@@ -26,23 +36,20 @@ const propertySchema = new Schema<PropertyDocument>(
     userId: {
       type: Schema.Types.ObjectId,
       required: true,
-      unique: true,
+      ref: "User",
+      index: true,
     },
-    points: {
+    name: {
+      type: String,
+      required: true,
+    },
+    description: String,
+    numOwn: {
       type: Number,
       required: true,
       default: 0,
     },
-    numTransactions: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    maxTransactions: {
-      type: Number,
-      required: true,
-      default: defaultUserLimits.maxTransactions,
-    },
+    numInStock: Number,
   },
   {
     timestamps: true,
