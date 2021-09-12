@@ -75,11 +75,12 @@ propertySchema.static("build", build);
 propertySchema.pre<PropertyDocument>(
   "save",
   async function (done: HookNextFunction) {
-    // If the user has the maximum transaction count, throw an error
-    if (this.numTransactions > this.maxTransactions) {
+    // If the user does not have enough property in stock, throw an error
+    if (this.numInStock && this.numInStock < 0) {
       throw new UnprocessableEntityError(
-        `You reached the maximum transaction count ${this.maxTransactions}. ` +
-          "Please email Jimmy to apply for a quota increase."
+        `Sorry, you don't have enough stock for property ${this.name} left. ` +
+          "If you still need to process this change in property, please update " +
+          "the in stock setting of this item."
       );
     }
     done();
