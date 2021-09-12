@@ -2,8 +2,8 @@
  * Created by Jimmy Lan
  * Creation Date: 2021-08-22
  * Description:
- *   Model describing properties of a user. Each user should
- *   only have one property document entry.
+ *   A property defined by the user. One user can correspond to many
+ *   properties.
  */
 
 import mongoose, { HookNextFunction, Model, Schema } from "mongoose";
@@ -17,13 +17,6 @@ import { UnprocessableEntityError } from "../errors";
 interface PropertyProps {
   /** ID of the user owning this property document. */
   userId: string;
-  /** Number of points that the user has. Can be positive, negative, or 0. */
-  points: number;
-  /** Accumulator, recording the number of active transactions corresponding
-   * to this user.*/
-  numTransactions: number;
-  /** Maximum num of transactions that this user can have. */
-  maxTransactions: number;
 }
 
 export type PropertyDocument = MongoDocument<PropertyProps>;
