@@ -2,7 +2,7 @@
  * Created by Jimmy Lan
  * Creation Date: 2021-08-21
  * Description:
- *   Route to create a transaction and update points count for the current
+ *   Route to create a transaction and update property amount for the current
  *   user.
  */
 
@@ -19,8 +19,18 @@ const router = Router();
 router.post(
   "/",
   [
-    body("title").optional().isString().isLength({ min: 2, max: 80 }),
-    body("pointsChange").isNumeric().not().equals("0").not().isString(),
+    body("propertyId")
+      .isString()
+      .isMongoId()
+      .withMessage("Property ID must be a valid object ID."),
+    body("title")
+      .optional()
+      .isString()
+      .isLength({ min: 2, max: 80 })
+      .withMessage(
+        "Title must be a valid string with length between 2 and 80."
+      ),
+    body("amountChange").isNumeric().not().equals("0").not().isString(),
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
