@@ -52,7 +52,7 @@ router.patch(
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { transactionId } = req.params;
-    const { title, pointsChange } = req.body;
+    const { title, amountChange, propertyId } = req.body;
     const user = req.user!;
 
     // Find transaction
