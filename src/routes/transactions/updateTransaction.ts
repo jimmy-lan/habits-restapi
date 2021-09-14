@@ -28,8 +28,8 @@ const updateUserPoints = async (userId: string, diffPoints: number) => {
   return savedProperty.points;
 };
 
-const getDiffPoints = (oldPoints: number, newPoints: number) => {
-  return newPoints - oldPoints;
+const getDiffAmount = (oldAmount: number, newAmount: number) => {
+  return newAmount - oldAmount;
 };
 
 router.patch(
@@ -71,11 +71,11 @@ router.patch(
     // Create a copy of the old transaction to return.
     const oldTransaction = transaction.toJSON();
 
-    // Number of points to add to the user, as a result of this modification.
-    let diffPoints = 0;
-    // pointsChange can't be 0, so this is good.
-    if (pointsChange) {
-      diffPoints = getDiffPoints(transaction.amountChange, pointsChange);
+    // Amount of property to add to the user, as a result of this modification.
+    let diffAmount = 0;
+    // amoungChange can't be 0, so this is good.
+    if (amountChange) {
+      diffAmount = getDiffAmount(transaction.amountChange, amountChange);
     }
 
     // Total number of points that the user has after this operation.
