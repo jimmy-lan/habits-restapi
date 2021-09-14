@@ -25,8 +25,8 @@ const validationHandlers = [
     .notEmpty({ ignore_whitespace: true })
     .withMessage("Description of property must be a non-empty string.")
     .optional(),
-  body("numOwn").isNumeric().not().isString().optional(),
-  body("numInStock").isNumeric().not().isString().optional(),
+  body("numOwn").isFloat({ min: 0 }).not().isString().optional(),
+  body("numInStock").isFloat({ min: 0 }).not().isString().optional(),
 ];
 
 /**
@@ -43,13 +43,23 @@ router.patch(
     const { name, description, numOwn, numInStock } = req.body;
     const user = req.user!;
 
-    // Find difference in points
-    const property = await Property.findOne({ userId: user.id });
+    // Find property
+    const property = await Property.findById(propertyId);
     if (!property) {
-      throw new NotFoundError(
-        "Could not locate property data for current user."
-      );
+      throw new NotFoundError("Could not locate this property.");
     }
+
+    if (name) {
+      property.name = name;
+    }
+    if (description) {
+      property.description = description;
+    }
+    if (numInStock) {
+      property.numInStock = numInStock;
+    }
+
+    // Find difference in points
     const diffPoints = points - property.points;
     if (!diffPoints) {
       throw new BadRequestError(
