@@ -79,7 +79,7 @@ router.post(
     return res.status(201).json({
       success: true,
       payload: {
-        transaction,
+        transaction: transaction!,
         amount: property.amount,
       },
     });
