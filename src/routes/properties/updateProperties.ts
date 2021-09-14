@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, Router } from "express";
-import { body, param } from "express-validator";
+import { param } from "express-validator";
 import mongoose from "mongoose";
 import { validateRequest } from "../../middlewares";
 import { Property, Transaction } from "../../models";
@@ -20,10 +20,7 @@ const router = Router();
  */
 router.patch(
   "/:propertyId",
-  [
-    body("points").isNumeric().not().isString(),
-    param("propertyId").isMongoId(),
-  ],
+  [param("propertyId").isMongoId()],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { points } = req.body;
