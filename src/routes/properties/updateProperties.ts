@@ -39,7 +39,8 @@ router.patch(
   validationHandlers,
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
-    const { points } = req.body;
+    const { propertyId } = req.params;
+    const { name, description, numOwn, numInStock } = req.body;
     const user = req.user!;
 
     // Find difference in points
