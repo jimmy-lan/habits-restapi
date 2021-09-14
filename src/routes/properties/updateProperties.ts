@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, Router } from "express";
-import { param } from "express-validator";
+import { body, param } from "express-validator";
 import mongoose from "mongoose";
 import { validateRequest } from "../../middlewares";
 import { Property, Transaction } from "../../models";
@@ -20,7 +20,21 @@ const router = Router();
  */
 router.patch(
   "/:propertyId",
-  [param("propertyId").isMongoId()],
+  [
+    param("propertyId").isMongoId(),
+    body("name")
+      .isString()
+      .notEmpty({ ignore_whitespace: true })
+      .withMessage("Name of property must be a non-empty string.")
+      .optional(),
+    body("description")
+      .isString()
+      .notEmpty({ ignore_whitespace: true })
+      .withMessage("Description of property must be a non-empty string.")
+      .optional(),
+    body("numOwn").isNumeric().not().isString().optional(),
+    body("numInStock").isNumeric().not().isString().optional(),
+  ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { points } = req.body;
