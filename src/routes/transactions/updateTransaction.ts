@@ -36,18 +36,18 @@ router.patch(
   "/:transactionId",
   [
     param("transactionId").notEmpty().isMongoId(),
+    body("propertyId")
+      .isString()
+      .isMongoId()
+      .withMessage("Property ID must be a valid object ID."),
     body("title")
       .optional()
-      .notEmpty()
       .isString()
-      .isLength({ min: 2, max: 80 }),
-    body("pointsChange")
-      .optional()
-      .isNumeric()
-      .not()
-      .equals("0")
-      .not()
-      .isString(),
+      .isLength({ min: 2, max: 80 })
+      .withMessage(
+        "Title must be a valid string with length between 2 and 80."
+      ),
+    body("amountChange").isNumeric().not().equals("0").not().isString(),
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
