@@ -78,8 +78,8 @@ router.patch(
       diffAmount = getDiffAmount(transaction.amountChange, amountChange);
     }
 
-    // Total number of points that the user has after this operation.
-    // This will be defined & returned if `diffPoints` is not 0.
+    // Total property amount that the user has after this operation.
+    // This will be defined & returned if `diffAmount` is not 0.
     let newPoints = undefined;
 
     const session = await mongoose.startSession();
@@ -88,15 +88,14 @@ router.patch(
       if (title) {
         transaction.title = title;
       }
-      if (pointsChange) {
-        transaction.pointsChange = pointsChange;
+      if (amountChange) {
+        transaction.amountChange = amountChange;
       }
-      await transaction.save();
+      await transaction.save({ session });
       // === END Update transaction document
 
       // === Update user points, if needed
-      if (diffPoints) {
-        newPoints = await updateUserPoints(user.id, diffPoints);
+      if (diffAmount) {
       }
       // === END Update user points
     });
