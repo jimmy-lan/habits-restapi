@@ -86,23 +86,19 @@ router.patch(
     await session.withTransaction(async () => {
       // === Update user property
       assignFieldsToProperty(property, req.body);
-      await property.save();
+      await property.save({ session });
       // === END Update user property
 
       // === Create a transaction if amount is modified
       if (amount !== undefined) {
         const amountChange = amount - property.amount;
-        await Transaction.create(
-          [
-            {
-              userId: user.id,
-              title: "Adjustment",
-              property,
-              amountChange,
-            },
-          ],
-          { session }
-        );
+        const transaction = Transaction.build({
+          userId: user.id,
+          title: "Adjustment",
+          property,
+          amountChange,
+        });
+        await transaction.save({ session });
       }
       // === END Create a transaction is amount is modified
     });

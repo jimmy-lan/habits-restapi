@@ -78,7 +78,7 @@ propertySchema.pre<PropertyDocument>(
   "save",
   async function (done: HookNextFunction) {
     // If the user does not have enough property in stock, throw an error
-    if (this.numInStock && this.numInStock < 0) {
+    if (this.amountInStock && this.amountInStock < 0) {
       throw new UnprocessableEntityError(
         `Sorry, you don't have enough stock for property ${this.name} left. ` +
           "If you still need to process this change in property, please update " +
