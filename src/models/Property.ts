@@ -21,12 +21,12 @@ interface PropertyProps {
   /** Description of property. */
   description?: string;
   /** Number of this property own by user. */
-  numOwn: number;
+  amount: number;
   /** Number of this property available to be obtained by the user.
    * Whenever the user obtains this property, this number will be reduced
    * by the amount that the user obtains. When this number drops to zero,
    * the user may not obtain more counts of this property. */
-  numInStock?: number;
+  amountInStock?: number;
   isDeleted?: boolean;
 }
 
@@ -45,12 +45,12 @@ const propertySchema = new Schema<PropertyDocument>(
       required: true,
     },
     description: String,
-    numOwn: {
+    amount: {
       type: Number,
       required: true,
       default: 0,
     },
-    numInStock: Number,
+    amountInStock: Number,
     isDeleted: Boolean,
   },
   {
