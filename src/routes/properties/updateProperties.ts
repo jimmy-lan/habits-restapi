@@ -81,10 +81,14 @@ router.patch(
     if (!property) {
       throw new NotFoundError("Could not locate this property.");
     }
-    assignFieldsToProperty(property, req.body);
 
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
+      // === Update user property
+      assignFieldsToProperty(property, req.body);
+      await property.save();
+      // === END Update user property
+
       // === Create a transaction if amount is modified
       if (amount !== undefined) {
         const amountChange = amount - property.amount;
@@ -101,12 +105,6 @@ router.patch(
         );
       }
       // === END Create a transaction is amount is modified
-
-      // === Update user property
-      property.points = points;
-      property.numTransactions++;
-      await property.save();
-      // === END Update user property
     });
     session.endSession();
 
