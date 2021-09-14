@@ -45,7 +45,7 @@ router.delete(
     /*
      * We should perform the following in this function:
      * - (1) Set the target transaction as deleted.
-     * - (2) Update the number of points that the user has in the Users
+     * - (2) Update the property amount that the user has in the Users
      *   document after the transaction is reverted.
      * These operations should be atomic.
      */
@@ -57,8 +57,11 @@ router.delete(
       // === END Soft delete transaction
 
       // === Update user points
-      if (property) {
+      if (property && !property.isDeleted) {
         property.amount -= transaction.amountChange;
+        if (property.amountInStock) {
+          property.amountInStock += transaction.amountChange;
+        }
         await property.save({ session });
         newAmount = property.amount;
       }
