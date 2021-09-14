@@ -7,8 +7,7 @@
  */
 
 import { Request, Response, Router } from "express";
-import { validateRequest } from "../../middlewares";
-import { query } from "express-validator";
+import { validatePagination } from "../../middlewares";
 import { Transaction } from "../../models";
 import { notDeletedCondition } from "../../util";
 import { ResBody } from "../../types";
@@ -17,11 +16,7 @@ const router = Router();
 
 router.get(
   "/",
-  [
-    query("limit").optional().isInt({ gt: 0 }),
-    query("skip").optional().isInt({ gt: 0 }),
-  ],
-  validateRequest,
+  validatePagination,
   async (req: Request, res: Response<ResBody>) => {
     const { skip, limit } = req.query;
     const user = req.user!;

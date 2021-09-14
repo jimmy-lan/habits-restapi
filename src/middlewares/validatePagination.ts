@@ -8,9 +8,7 @@ import { validateRequest } from "./validateRequest";
 import { query } from "express-validator";
 
 export const validatePagination = [
-  [
-    query("limit").optional().isInt({ gt: 0 }),
-    query("skip").optional().isInt({ gt: 0 }),
-  ],
+  query("limit").optional().isInt({ gt: 0 }),
+  query("skip").optional().isInt({ gt: 0 }),
   validateRequest,
 ];
