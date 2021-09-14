@@ -61,7 +61,7 @@ router.post(
     await session.withTransaction(async () => {
       // === Add user points
       property.amount += amountChange;
-      await property.save();
+      await property.save({ session });
       // === END Add user points
 
       // === Add transaction
@@ -69,9 +69,10 @@ router.post(
         await Transaction.create(
           [
             {
-              userId: id,
+              userId: user.id,
               title: title || "Untitled transaction",
-              amountChange: pointsChange,
+              amountChange,
+              property,
             },
           ],
           { session }
