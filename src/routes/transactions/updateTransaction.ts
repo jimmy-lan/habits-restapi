@@ -60,7 +60,9 @@ router.patch(
       _id: transactionId,
       userId: user.id,
       ...notDeletedCondition,
-    });
+    })
+      .populate("property", "name")
+      .exec();
     if (!transaction) {
       throw new NotFoundError(
         `Transaction "${transactionId}" could not be found.`
