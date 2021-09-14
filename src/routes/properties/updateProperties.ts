@@ -58,16 +58,16 @@ router.patch(
     if (numInStock) {
       property.numInStock = numInStock;
     }
-
-    // Find difference in points
-    const diffPoints = points - property.points;
-    if (!diffPoints) {
-      throw new BadRequestError(
-        "New points specified must be different from the number of points " +
-          "that you currently have. You currently have " +
-          property.points +
-          " points."
-      );
+    if (numOwn) {
+      // Find difference in values
+      const diffValue = numOwn - property.numOwn;
+      if (!diffValue) {
+        throw new BadRequestError(
+          "New amount specified must be different from the amount " +
+            "that you currently have. The current amount " +
+            `for ${property.name} is ${property.numOwn}.`
+        );
+      }
     }
 
     const session = await mongoose.startSession();
