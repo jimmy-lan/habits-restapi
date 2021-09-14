@@ -93,6 +93,7 @@ router.patch(
             {
               userId: user.id,
               title: "Adjustment",
+              property,
               amountChange,
             },
           ],
