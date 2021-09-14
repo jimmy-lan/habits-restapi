@@ -30,10 +30,10 @@ const assignFieldsToProperty = (
   if (description) {
     property.description = description;
   }
-  if (amount) {
+  if (amount !== undefined) {
     // Find difference in values
-    const diffValue = amount - property.amount;
-    if (!diffValue) {
+    const diffAmount = amount - property.amount;
+    if (!diffAmount) {
       throw new BadRequestError(
         "New amount specified must be different from the amount " +
           "that you currently have. The current amount " +
@@ -73,6 +73,7 @@ router.patch(
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { propertyId } = req.params;
+    const { amount } = req.body;
     const user = req.user!;
 
     // Find property
@@ -84,18 +85,21 @@ router.patch(
 
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
-      // === Create a transaction with `diffPoints`
-      await Transaction.create(
-        [
-          {
-            userId: user.id,
-            title: "Adjustment",
-            amountChange: diffPoints,
-          },
-        ],
-        { session }
-      );
-      // === END Create a transaction with `diffPoints`
+      // === Create a transaction if amount is modified
+      if (amount !== undefined) {
+        const amountChange = amount - property.amount;
+        await Transaction.create(
+          [
+            {
+              userId: user.id,
+              title: "Adjustment",
+              amountChange,
+            },
+          ],
+          { session }
+        );
+      }
+      // === END Create a transaction is amount is modified
 
       // === Update user property
       property.points = points;
