@@ -11,7 +11,7 @@ import { body } from "express-validator";
 import mongoose from "mongoose";
 import { ResBody } from "../../types";
 import { validateRequest } from "../../middlewares";
-import { Property, Transaction } from "../../models";
+import { Property, Transaction, TransactionDocument } from "../../models";
 import { NotFoundError } from "../../errors";
 
 const router = Router();
@@ -38,7 +38,7 @@ router.post(
     const user = req.user!;
 
     // These values will be populated and returned
-    let createdTransaction = {};
+    let transaction: TransactionDocument;
 
     // Find the property of interest
     const property = await Property.findOne({
@@ -65,19 +65,13 @@ router.post(
       // === END Add user points
 
       // === Add transaction
-      createdTransaction = (
-        await Transaction.create(
-          [
-            {
-              userId: user.id,
-              title: title || "Untitled transaction",
-              amountChange,
-              property,
-            },
-          ],
-          { session }
-        )
-      )[0];
+      transaction = Transaction.build({
+        userId: user.id,
+        title: title || "Untitled transaction",
+        amountChange,
+        property,
+      });
+      await transaction.save({ session });
       // === END Add transaction
     });
     session.endSession();
@@ -85,7 +79,7 @@ router.post(
     return res.status(201).json({
       success: true,
       payload: {
-        transaction: createdTransaction,
+        transaction,
         amount: property.amount,
       },
     });
