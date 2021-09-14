@@ -13,6 +13,22 @@ import { ResBody } from "../../types";
 
 const router = Router();
 
+const validationHandlers = [
+  param("propertyId").isMongoId(),
+  body("name")
+    .isString()
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("Name of property must be a non-empty string.")
+    .optional(),
+  body("description")
+    .isString()
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("Description of property must be a non-empty string.")
+    .optional(),
+  body("numOwn").isNumeric().not().isString().optional(),
+  body("numInStock").isNumeric().not().isString().optional(),
+];
+
 /**
  * Route to adjust user points. This will set user points to a fixed number,
  * and an adjustment transaction will be created automatically to reflect
@@ -20,21 +36,7 @@ const router = Router();
  */
 router.patch(
   "/:propertyId",
-  [
-    param("propertyId").isMongoId(),
-    body("name")
-      .isString()
-      .notEmpty({ ignore_whitespace: true })
-      .withMessage("Name of property must be a non-empty string.")
-      .optional(),
-    body("description")
-      .isString()
-      .notEmpty({ ignore_whitespace: true })
-      .withMessage("Description of property must be a non-empty string.")
-      .optional(),
-    body("numOwn").isNumeric().not().isString().optional(),
-    body("numInStock").isNumeric().not().isString().optional(),
-  ],
+  validationHandlers,
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { points } = req.body;
