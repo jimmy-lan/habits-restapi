@@ -44,7 +44,7 @@ router.post(
     /*
      * We should perform the following in this function:
      * - (1) Create a new transaction for the current user, recording
-     *   the title of this transaction, if given, and points change.
+     *   the information about this transaction.
      * - (2) Update the number of points that the user has.
      * These operations should be atomic. For example, if (2) fails, we
      * should revert operation (1).
