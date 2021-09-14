@@ -4,10 +4,13 @@
  * Description: Validate pagination parameters.
  */
 
-import { NextFunction, Request, Response } from "express";
 import { validateRequest } from "./validateRequest";
+import { query } from "express-validator";
 
-const validatePagination = [
-  (req: Request, res: Response, next: NextFunction) => {},
+export const validatePagination = [
+  [
+    query("limit").optional().isInt({ gt: 0 }),
+    query("skip").optional().isInt({ gt: 0 }),
+  ],
   validateRequest,
 ];
