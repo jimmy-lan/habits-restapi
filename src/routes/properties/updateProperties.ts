@@ -7,11 +7,44 @@ import { Request, Response, Router } from "express";
 import { body, param } from "express-validator";
 import mongoose from "mongoose";
 import { validateRequest } from "../../middlewares";
-import { Property, Transaction } from "../../models";
+import {
+  Property,
+  PropertyDocument,
+  PropertyProps,
+  Transaction,
+} from "../../models";
 import { BadRequestError, NotFoundError } from "../../errors";
 import { ResBody } from "../../types";
 
 const router = Router();
+
+const assignFieldsToProperty = (
+  property: PropertyDocument,
+  fields: Partial<PropertyProps>
+) => {
+  const { name, description, amount, amountInStock } = fields;
+
+  if (name) {
+    property.name = name;
+  }
+  if (description) {
+    property.description = description;
+  }
+  if (amount) {
+    // Find difference in values
+    const diffValue = amount - property.amount;
+    if (!diffValue) {
+      throw new BadRequestError(
+        "New amount specified must be different from the amount " +
+          "that you currently have. The current amount " +
+          `for ${property.name} is ${property.amount}.`
+      );
+    }
+  }
+  if (amountInStock) {
+    property.amountInStock = amountInStock;
+  }
+};
 
 const validationHandlers = [
   param("propertyId").isMongoId(),
@@ -25,8 +58,8 @@ const validationHandlers = [
     .notEmpty({ ignore_whitespace: true })
     .withMessage("Description of property must be a non-empty string.")
     .optional(),
-  body("numOwn").isFloat({ min: 0 }).not().isString().optional(),
-  body("numInStock").isFloat({ min: 0 }).not().isString().optional(),
+  body("amount").isFloat({ min: 0 }).not().isString().optional(),
+  body("amountInStock").isFloat({ min: 0 }).not().isString().optional(),
 ];
 
 /**
@@ -40,7 +73,6 @@ router.patch(
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { propertyId } = req.params;
-    const { name, description, numOwn, numInStock } = req.body;
     const user = req.user!;
 
     // Find property
@@ -49,26 +81,7 @@ router.patch(
       throw new NotFoundError("Could not locate this property.");
     }
 
-    if (name) {
-      property.name = name;
-    }
-    if (description) {
-      property.description = description;
-    }
-    if (numInStock) {
-      property.numInStock = numInStock;
-    }
-    if (numOwn) {
-      // Find difference in values
-      const diffValue = numOwn - property.numOwn;
-      if (!diffValue) {
-        throw new BadRequestError(
-          "New amount specified must be different from the amount " +
-            "that you currently have. The current amount " +
-            `for ${property.name} is ${property.numOwn}.`
-        );
-      }
-    }
+    assignFieldsToProperty(property, req.body);
 
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
