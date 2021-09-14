@@ -8,3 +8,4 @@ export * from "./validateRequest";
 export * from "./rateLimitIp";
 export * from "./requireAuth";
 export * from "./requireRoles";
+export * from "./validatePagination";
