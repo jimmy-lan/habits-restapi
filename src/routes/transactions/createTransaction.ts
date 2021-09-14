@@ -35,11 +35,19 @@ router.post(
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { title, amountChange, propertyId } = req.body;
-    const { id } = req.user!;
+    const user = req.user!;
 
     // These values will be populated and returned
     let createdTransaction = {};
-    let newPoints = 0;
+
+    // Find the property of interest
+    const property = await Property.findOne({
+      userId: user.id,
+      _id: propertyId,
+    });
+    if (!property) {
+      throw new NotFoundError("Could not locate this property.");
+    }
 
     /*
      * We should perform the following in this function:
@@ -52,19 +60,8 @@ router.post(
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // === Add user points
-      const property = await Property.findOne({ userId: id }, null, {
-        session,
-      });
-      if (!property) {
-        throw new NotFoundError(
-          "Could not locate property data for the current user."
-        );
-      }
-
-      property.points += pointsChange;
-      property.numTransactions++;
-      const savedProperty = await property.save();
-      newPoints = savedProperty.points;
+      property.amount += amountChange;
+      await property.save();
       // === END Add user points
 
       // === Add transaction
@@ -88,7 +85,7 @@ router.post(
       success: true,
       payload: {
         transaction: createdTransaction,
-        points: newPoints,
+        amount: property.amount,
       },
     });
   }
