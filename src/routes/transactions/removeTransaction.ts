@@ -42,6 +42,7 @@ router.delete(
     const property = await Property.findOne({
       _id: transaction.property,
       userId: user.id,
+      ...notDeletedCondition,
     });
 
     /*
@@ -59,7 +60,7 @@ router.delete(
       // === END Soft delete transaction
 
       // === Update user points
-      if (property && !property.isDeleted) {
+      if (property) {
         property.amount -= transaction.amountChange;
         if (property.amountInStock) {
           property.amountInStock += transaction.amountChange;
