@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 import { param } from "express-validator";
 import { validateRequest } from "../../middlewares";
 import { ResBody } from "../../types";
-import { Property, Transaction } from "../../models";
+import { Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
 
 const router = Router();
@@ -28,22 +28,12 @@ router.delete(
     const transaction = await Transaction.findOne({
       _id: transactionId,
       userId: user.id,
-    });
+    }).populate("property");
     if (!transaction || transaction.isDeleted) {
       throw new NotFoundError(
         `Transaction "${transactionId}" could not be found.`
       );
     }
-    const property = await Property.findOne({ userId: user.id });
-    if (!property) {
-      throw new NotFoundError(
-        "Could not locate property data for the current user."
-      );
-    }
-
-    // These values will be populated and returned
-    let deletedTransaction = {};
-    let newPoints = 0;
 
     /*
      * We should perform the following in this function:
