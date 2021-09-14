@@ -34,7 +34,7 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
-    const { title, pointsChange } = req.body;
+    const { title, amountChange, propertyId } = req.body;
     const { id } = req.user!;
 
     // These values will be populated and returned
