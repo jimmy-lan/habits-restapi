@@ -13,6 +13,7 @@ import { validateRequest } from "../../middlewares";
 import { ResBody } from "../../types";
 import { Property, Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
+import { notDeletedCondition } from "../../util";
 
 const router = Router();
 
@@ -31,8 +32,9 @@ router.delete(
     const transaction = await Transaction.findOne({
       _id: transactionId,
       userId: user.id,
+      ...notDeletedCondition,
     });
-    if (!transaction || transaction.isDeleted) {
+    if (!transaction) {
       throw new NotFoundError(
         `Transaction "${transactionId}" could not be found.`
       );
