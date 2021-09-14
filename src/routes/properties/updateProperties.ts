@@ -4,9 +4,9 @@
  */
 
 import { Request, Response, Router } from "express";
-import { validateRequest } from "../../middlewares";
 import { body } from "express-validator";
 import mongoose from "mongoose";
+import { validateRequest } from "../../middlewares";
 import { Property, Transaction } from "../../models";
 import { BadRequestError, NotFoundError } from "../../errors";
 import { ResBody } from "../../types";
