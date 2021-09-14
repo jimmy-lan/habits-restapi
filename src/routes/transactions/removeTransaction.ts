@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 import { param } from "express-validator";
 import { validateRequest } from "../../middlewares";
 import { ResBody } from "../../types";
-import { Transaction } from "../../models";
+import { Property, Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
 
 const router = Router();
@@ -24,16 +24,23 @@ router.delete(
     const { transactionId } = req.params;
     const user = req.user!;
 
+    // These values will be populated before return
+    let newAmount = 0;
+
     // Find documents needed for this route
     const transaction = await Transaction.findOne({
       _id: transactionId,
       userId: user.id,
-    }).populate("property");
+    });
     if (!transaction || transaction.isDeleted) {
       throw new NotFoundError(
         `Transaction "${transactionId}" could not be found.`
       );
     }
+    const property = await Property.findOne({
+      _id: transaction.property,
+      userId: user.id,
+    });
 
     /*
      * We should perform the following in this function:
@@ -46,14 +53,15 @@ router.delete(
     await session.withTransaction(async () => {
       // === Soft delete transaction
       transaction.isDeleted = true;
-      deletedTransaction = await transaction.save();
+      await transaction.save({ session });
       // === END Soft delete transaction
 
       // === Update user points
-      property.points -= transaction.amountChange;
-      property.numTransactions--;
-      const savedProperty = await property.save();
-      newPoints = savedProperty.points;
+      if (property) {
+        property.amount -= transaction.amountChange;
+        await property.save({ session });
+        newAmount = property.amount;
+      }
       // === END Update user points
     });
     session.endSession();
@@ -61,8 +69,8 @@ router.delete(
     return res.status(202).json({
       success: true,
       payload: {
-        transaction: deletedTransaction,
-        points: newPoints,
+        transaction,
+        amount: newAmount,
       },
     });
   }
