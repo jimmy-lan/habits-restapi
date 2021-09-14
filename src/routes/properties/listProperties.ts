@@ -20,4 +20,4 @@ router.get("/", async (req: Request, res: Response<ResBody>) => {
   });
 });
 
-export { router as getPropertiesRouter };
+export { router as listPropertiesRouter };

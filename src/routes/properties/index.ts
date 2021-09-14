@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { getPropertiesRouter } from "./getProperties";
+import { listPropertiesRouter } from "./listProperties";
 import { modifyPropertiesRouter } from "./updateProperties";
 
 const router = Router();
 
-router.use(getPropertiesRouter, modifyPropertiesRouter);
+router.use(listPropertiesRouter, modifyPropertiesRouter);
 
 export { router as propertiesRouter };
