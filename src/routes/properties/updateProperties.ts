@@ -80,7 +80,6 @@ router.patch(
     if (!property) {
       throw new NotFoundError("Could not locate this property.");
     }
-
     assignFieldsToProperty(property, req.body);
 
     const session = await mongoose.startSession();
@@ -91,7 +90,7 @@ router.patch(
           {
             userId: user.id,
             title: "Adjustment",
-            pointsChange: diffPoints,
+            amountChange: diffPoints,
           },
         ],
         { session }

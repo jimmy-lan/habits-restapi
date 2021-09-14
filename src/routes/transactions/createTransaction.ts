@@ -64,7 +64,7 @@ router.post(
             {
               userId: id,
               title: title || "Untitled transaction",
-              pointsChange,
+              amountChange: pointsChange,
             },
           ],
           { session }

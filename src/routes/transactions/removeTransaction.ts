@@ -60,7 +60,7 @@ router.delete(
       // === END Soft delete transaction
 
       // === Update user points
-      property.points -= transaction.pointsChange;
+      property.points -= transaction.amountChange;
       property.numTransactions--;
       const savedProperty = await property.save();
       newPoints = savedProperty.points;

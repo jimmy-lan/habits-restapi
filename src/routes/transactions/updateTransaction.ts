@@ -73,7 +73,7 @@ router.patch(
     let diffPoints = 0;
     // pointsChange can't be 0, so this is good.
     if (pointsChange) {
-      diffPoints = getDiffPoints(transaction.pointsChange, pointsChange);
+      diffPoints = getDiffPoints(transaction.amountChange, pointsChange);
     }
 
     // Total number of points that the user has after this operation.
