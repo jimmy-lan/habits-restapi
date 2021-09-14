@@ -77,7 +77,10 @@ router.patch(
     const user = req.user!;
 
     // Find property
-    const property = await Property.findById(propertyId);
+    const property = await Property.findOne({
+      userId: user.id,
+      _id: propertyId,
+    });
     if (!property) {
       throw new NotFoundError("Could not locate this property.");
     }
