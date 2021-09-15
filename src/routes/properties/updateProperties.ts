@@ -99,14 +99,10 @@ router.patch(
 
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
-      // === Update user property
-      assignFieldsToProperty(property, req.body);
-      await property.save({ session });
-      // === END Update user property
-
       // === Create a transaction if amount is modified
+      const oldAmount = property.amount;
       if (amount !== undefined) {
-        const amountChange = amount - property.amount;
+        const amountChange = amount - oldAmount;
         const transaction = Transaction.build({
           userId: user.id,
           title: "Adjustment",
@@ -116,6 +112,11 @@ router.patch(
         await transaction.save({ session });
       }
       // === END Create a transaction is amount is modified
+
+      // === Update user property
+      assignFieldsToProperty(property, req.body);
+      await property.save({ session });
+      // === END Update user property
     });
     session.endSession();
 
