@@ -5,6 +5,9 @@
 import { Request, Response, Router } from "express";
 import { validateRequest } from "../../middlewares";
 import { body } from "express-validator";
+import { Property } from "../../models";
+import { UnprocessableEntityError } from "../../errors";
+import { ResBody } from "../../types";
 
 const router = Router();
 
@@ -26,9 +29,17 @@ router.post(
     body("amountInStock").isNumeric(),
   ],
   validateRequest,
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response<ResBody>) => {
     const { name, description, amountInStock } = req.body;
     const user = req.user!;
+
+    // Check if this user already has a property of the same name.
+    const existingProperty = await Property.findOne({ userId: user.id, name });
+    if (existingProperty) {
+      throw new UnprocessableEntityError(
+        `You already have a property with name "${name}".`
+      );
+    }
   }
 );
 
