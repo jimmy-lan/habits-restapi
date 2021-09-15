@@ -50,6 +50,11 @@ router.post(
       amountInStock,
     });
     await property.save();
+
+    return res.status(201).json({
+      success: true,
+      payload: property,
+    });
   }
 );
 
