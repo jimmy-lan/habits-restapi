@@ -61,6 +61,7 @@ const propertySchema = new Schema<PropertyDocument>(
         delete ret._id;
         delete ret.__v;
         delete ret.isDeleted;
+        delete ret.userId;
       },
       versionKey: false,
     },
