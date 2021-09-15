@@ -112,11 +112,11 @@ router.post(
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // Save new user
-      await user.save({ session });
+      const savedUser = await user.save({ session });
 
       // Create a default property
       const defaultProperty = Property.build({
-        userId: user._id,
+        userId: savedUser.id,
         name: "points",
         amount: 0,
       });
