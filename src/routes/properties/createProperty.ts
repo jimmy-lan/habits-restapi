@@ -40,6 +40,16 @@ router.post(
         `You already have a property with name "${name}".`
       );
     }
+
+    // Add new property
+    const property = Property.build({
+      userId: user.id,
+      name,
+      description,
+      amount: 0,
+      amountInStock,
+    });
+    await property.save();
   }
 );
 
