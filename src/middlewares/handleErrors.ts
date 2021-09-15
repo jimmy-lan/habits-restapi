@@ -36,7 +36,9 @@ export const handleErrors: ErrorRequestHandler = (error, req, res, next) => {
   }
 
   if (error.statusCode && error.statusCode < 500) {
-    response.errors = error.serializeErrors();
+    if (error.message) {
+      response.errors = [error.message];
+    }
     return res.status(error.statusCode).send(response);
   }
 
