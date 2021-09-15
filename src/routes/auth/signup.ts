@@ -112,7 +112,7 @@ router.post(
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // Save new user
-      await user.save();
+      await user.save({ session });
     });
     session.endSession();
 
