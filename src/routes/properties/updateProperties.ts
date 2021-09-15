@@ -22,6 +22,15 @@ import { ResBody } from "../../types";
 
 const router = Router();
 
+const terminateIfExact = (field: string, current: any, next: any) => {
+  if (current === next) {
+    throw new BadRequestError(
+      `New ${field} specified must be different from the ${field} ` +
+        "that you currently have."
+    );
+  }
+};
+
 const assignFieldsToProperty = (
   property: PropertyDocument,
   fields: Partial<PropertyProps>
@@ -29,22 +38,19 @@ const assignFieldsToProperty = (
   const { name, description, amount, amountInStock } = fields;
 
   if (name) {
+    terminateIfExact("name", property.name, name);
     property.name = name;
   }
   if (description) {
+    terminateIfExact("description", property.description, description);
     property.description = description;
   }
   if (amount !== undefined) {
-    if (amount === property.amount) {
-      throw new BadRequestError(
-        "New amount specified must be different from the amount " +
-          "that you currently have. The current amount " +
-          `for ${property.name} is ${property.amount}.`
-      );
-    }
+    terminateIfExact("amount", property.amount, amount);
     property.amount = amount;
   }
   if (amountInStock) {
+    terminateIfExact("amount in stock", property.amountInStock, amountInStock);
     property.amountInStock = amountInStock;
   }
 };
