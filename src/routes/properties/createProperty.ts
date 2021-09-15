@@ -26,7 +26,10 @@ router.post(
     body("amountInStock").isNumeric(),
   ],
   validateRequest,
-  (req: Request, res: Response) => {}
+  (req: Request, res: Response) => {
+    const { name, description, amountInStock } = req.body;
+    const user = req.user!;
+  }
 );
 
 export { router as createPropertyRouter };
