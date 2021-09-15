@@ -12,20 +12,26 @@ import { ResBody } from "../../types";
 import { Property, Transaction } from "../../models";
 import { notDeletedCondition } from "../../util";
 import { NotFoundError } from "../../errors";
-import mongoose from "mongoose";
+import mongoose, { ClientSession } from "mongoose";
 
 const router = Router();
 
-const updateUserPoints = async (userId: string, diffPoints: number) => {
-  const property = await Property.findOne({ userId });
+const updatePropertyAmount = async (
+  userId: string,
+  propertyId: string,
+  diffAmount: number,
+  session: ClientSession
+) => {
+  const property = await Property.findOne({ _id: propertyId, userId });
   if (!property) {
-    throw new NotFoundError(
-      "Could not locate property data for the current user."
-    );
+    throw new NotFoundError("Could not locate property data.");
   }
-  property.points += diffPoints;
-  const savedProperty = await property.save();
-  return savedProperty.points;
+  property.amount += diffAmount;
+  if (property.amountInStock) {
+    property.amountInStock -= diffAmount;
+  }
+  await property.save({ session });
+  return property.amount;
 };
 
 const getDiffAmount = (oldAmount: number, newAmount: number) => {
@@ -80,7 +86,7 @@ router.patch(
 
     // Total property amount that the user has after this operation.
     // This will be defined & returned if `diffAmount` is not 0.
-    let newPoints = undefined;
+    let newAmount = undefined;
 
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
@@ -106,7 +112,7 @@ router.patch(
       payload: {
         transaction,
         updatedFrom: oldTransaction,
-        points: newPoints,
+        amount: newAmount,
       },
     });
   }
