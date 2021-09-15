@@ -8,7 +8,10 @@ router.delete(
   "/:propertyId",
   [param("propertyId").notEmpty().isMongoId()],
   validateRequest,
-  async (req: Request, res: Response) => {}
+  async (req: Request, res: Response) => {
+    const { propertyId } = req.params;
+    const user = req.user!;
+  }
 );
 
 export { router as deletePropertyRouter };
