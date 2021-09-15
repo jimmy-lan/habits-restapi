@@ -13,7 +13,11 @@ import {
   PropertyProps,
   Transaction,
 } from "../../models";
-import { BadRequestError, NotFoundError } from "../../errors";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnprocessableEntityError,
+} from "../../errors";
 import { ResBody } from "../../types";
 
 const router = Router();
@@ -73,8 +77,17 @@ router.patch(
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { propertyId } = req.params;
-    const { amount } = req.body;
+    const { name, description, amount, amountInStock } = req.body;
     const user = req.user!;
+
+    const definedValues = [name, description, amount, amountInStock].filter(
+      (value) => !!value
+    );
+    if (!definedValues.length) {
+      throw new UnprocessableEntityError(
+        "Please specify at least one property field for this update."
+      );
+    }
 
     // Find property
     const property = await Property.findOne({
