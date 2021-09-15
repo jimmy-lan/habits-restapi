@@ -104,7 +104,7 @@ router.patch(
       if (diffAmount) {
         newAmount = updatePropertyAmount(
           user.id,
-          transaction.property._id,
+          transaction.property._id as string,
           diffAmount,
           session
         );
