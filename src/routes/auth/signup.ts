@@ -7,7 +7,7 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 
 import { AuthResBody, UserRole } from "../../types";
-import { Invitation, InvitationDocument, User } from "../../models";
+import { Invitation, InvitationDocument, Property, User } from "../../models";
 import { validateRequest } from "../../middlewares";
 import { BadRequestError, UnprocessableEntityError } from "../../errors";
 import { PasswordEncoder } from "../../services";
@@ -113,6 +113,14 @@ router.post(
     await session.withTransaction(async () => {
       // Save new user
       await user.save({ session });
+
+      // Create a default property
+      const defaultProperty = Property.build({
+        userId: user._id,
+        name: "points",
+        amount: 0,
+      });
+      await defaultProperty.save({ session });
     });
     session.endSession();
 
