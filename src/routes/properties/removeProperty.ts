@@ -16,7 +16,7 @@ router.delete(
     // We need to remove the property together with all transactions
     // for this property.
     const session = await mongoose.startSession();
-
+    await session.withTransaction(async () => {});
     session.endSession();
   }
 );
