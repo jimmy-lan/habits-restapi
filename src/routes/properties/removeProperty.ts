@@ -36,6 +36,11 @@ router.delete(
       // === END Soft delete property
     });
     session.endSession();
+
+    return res.status(202).json({
+      success: true,
+      payload: property,
+    });
   }
 );
 
