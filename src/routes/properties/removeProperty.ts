@@ -29,7 +29,12 @@ router.delete(
     // We need to remove the property together with all transactions
     // for this property.
     const session = await mongoose.startSession();
-    await session.withTransaction(async () => {});
+    await session.withTransaction(async () => {
+      // === Soft delete property
+      property.isDeleted = true;
+      await property.save({ session });
+      // === END Soft delete property
+    });
     session.endSession();
   }
 );
