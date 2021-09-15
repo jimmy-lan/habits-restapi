@@ -67,7 +67,7 @@ router.patch(
       userId: user.id,
       ...notDeletedCondition,
     })
-      .populate("property", "name")
+      .populate("property", "_id name")
       .exec();
     if (!transaction) {
       throw new NotFoundError(
@@ -102,6 +102,12 @@ router.patch(
 
       // === Update user points, if needed
       if (diffAmount) {
+        newAmount = updatePropertyAmount(
+          user.id,
+          transaction.property._id,
+          diffAmount,
+          session
+        );
       }
       // === END Update user points
     });
