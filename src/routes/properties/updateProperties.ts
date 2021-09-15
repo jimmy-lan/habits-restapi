@@ -35,15 +35,14 @@ const assignFieldsToProperty = (
     property.description = description;
   }
   if (amount !== undefined) {
-    // Find difference in values
-    const diffAmount = amount - property.amount;
-    if (!diffAmount) {
+    if (amount === property.amount) {
       throw new BadRequestError(
         "New amount specified must be different from the amount " +
           "that you currently have. The current amount " +
           `for ${property.name} is ${property.amount}.`
       );
     }
+    property.amount = amount;
   }
   if (amountInStock) {
     property.amountInStock = amountInStock;
