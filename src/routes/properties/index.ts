@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { listPropertiesRouter } from "./listProperties";
-import { modifyPropertiesRouter } from "./updateProperties";
+import { modifyPropertiesRouter } from "./updateProperty";
 import { createPropertyRouter } from "./createProperty";
 import { deletePropertyRouter } from "./removeProperty";
 
