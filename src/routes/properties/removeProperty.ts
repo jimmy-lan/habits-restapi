@@ -1,7 +1,7 @@
+import mongoose from "mongoose";
 import { Request, Response, Router } from "express";
 import { param } from "express-validator";
 import { validateRequest } from "../../middlewares";
-import mongoose from "mongoose";
 import { Property, Transaction } from "../../models";
 import { notDeletedCondition } from "../../util";
 import { NotFoundError } from "../../errors";
