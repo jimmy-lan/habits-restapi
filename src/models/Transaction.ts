@@ -13,7 +13,8 @@ export interface TransactionProps {
   userId: string;
   /** Title of this transaction. */
   title?: string;
-  property: PropertyDocument;
+  /** Property that this transaction applies to. */
+  property: string | PropertyDocument;
   /** Change in property amount. A positive number means an increase in amount.
    * A negative number means a deduction of amount. */
   amountChange: number;
