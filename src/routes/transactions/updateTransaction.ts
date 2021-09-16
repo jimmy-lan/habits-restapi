@@ -9,7 +9,7 @@ import { Request, Response, Router } from "express";
 import { validateRequest } from "../../middlewares";
 import { body, param } from "express-validator";
 import { ResBody } from "../../types";
-import { Property, Transaction } from "../../models";
+import { Property, PropertyDocument, Transaction } from "../../models";
 import { notDeletedCondition } from "../../util";
 import { NotFoundError } from "../../errors";
 import mongoose, { ClientSession } from "mongoose";
@@ -74,6 +74,8 @@ router.patch(
         `Transaction "${transactionId}" could not be found.`
       );
     }
+    const transactionProperty = transaction.property as PropertyDocument;
+
     // Create a copy of the old transaction to return.
     const oldTransaction = transaction.toJSON();
 
@@ -104,7 +106,7 @@ router.patch(
       if (diffAmount) {
         newAmount = updatePropertyAmount(
           user.id,
-          transaction.property._id as string,
+          transactionProperty._id as string,
           diffAmount,
           session
         );
