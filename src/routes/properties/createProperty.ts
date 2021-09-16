@@ -25,8 +25,9 @@ router.post(
       .isLength({ min: 2, max: 100 })
       .withMessage(
         "Property description must be a string of length between 2 and 100."
-      ),
-    body("amountInStock").isNumeric(),
+      )
+      .optional(),
+    body("amountInStock").isNumeric().optional(),
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
