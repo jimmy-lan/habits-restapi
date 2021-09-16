@@ -41,10 +41,6 @@ router.patch(
   "/:transactionId",
   [
     param("transactionId").notEmpty().isMongoId(),
-    body("propertyId")
-      .isString()
-      .isMongoId()
-      .withMessage("Property ID must be a valid object ID."),
     body("title")
       .optional()
       .isString()
@@ -57,7 +53,7 @@ router.patch(
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { transactionId } = req.params;
-    const { title, amountChange, propertyId } = req.body;
+    const { title, amountChange } = req.body;
     const user = req.user!;
 
     // Find transaction
