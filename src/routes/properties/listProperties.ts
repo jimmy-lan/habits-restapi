@@ -4,16 +4,17 @@
  */
 
 import { Request, Response, Router } from "express";
+import { query } from "express-validator";
 import { ResBody } from "../../types";
 import { Property } from "../../models";
 import { validateRequest } from "../../middlewares";
-import { query } from "express-validator";
+import { validators } from "../../util";
 
 const router = Router();
 
 router.get(
   "/",
-  [query("fields").isArray()],
+  [validators.pageLimit, validators.pageSkip, query("fields").isArray()],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { skip, limit } = req.query;
