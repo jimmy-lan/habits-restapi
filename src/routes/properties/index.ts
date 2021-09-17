@@ -1,9 +1,16 @@
 import { Router } from "express";
-import { getPropertiesRouter } from "./getProperties";
-import { modifyPropertiesRouter } from "./updateProperties";
+import { listPropertiesRouter } from "./listProperties";
+import { modifyPropertiesRouter } from "./updateProperty";
+import { createPropertyRouter } from "./createProperty";
+import { deletePropertyRouter } from "./removeProperty";
 
 const router = Router();
 
-router.use(getPropertiesRouter, modifyPropertiesRouter);
+router.use(
+  createPropertyRouter,
+  deletePropertyRouter,
+  listPropertiesRouter,
+  modifyPropertiesRouter
+);
 
 export { router as propertiesRouter };

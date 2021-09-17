@@ -7,4 +7,4 @@ export * from "./email";
 export * from "./rateLimit";
 export * from "./token";
 export * from "./resetPassword";
-export * from "./userLimits";
+export * from "./quota";

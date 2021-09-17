@@ -2,25 +2,32 @@
  * Created by Jimmy Lan
  * Creation Date: 2021-08-22
  * Description:
- *   Model describing properties of a user. Each user should
- *   only have one property document entry.
+ *   A property defined by the user. One user can correspond to many
+ *   properties.
  */
 
 import mongoose, { HookNextFunction, Model, Schema } from "mongoose";
 import { MongoDocument } from "../types";
-import { defaultUserLimits } from "../config";
 import { UnprocessableEntityError } from "../errors";
 
-interface PropertyProps {
+// TODO Fix all `numTransactions` and `maxTransactions` usage from the old
+//   `Property` model.
+
+export interface PropertyProps {
   /** ID of the user owning this property document. */
   userId: string;
-  /** Number of points that the user has. Can be positive, negative, or 0. */
-  points: number;
-  /** Accumulator, recording the number of active transactions corresponding
-   * to this user.*/
-  numTransactions: number;
-  /** Maximum num of transactions that this user can have. */
-  maxTransactions: number;
+  /** Name of property. */
+  name: string;
+  /** Description of property. */
+  description?: string;
+  /** Number of this property own by user. */
+  amount: number;
+  /** Number of this property available to be obtained by the user.
+   * Whenever the user obtains this property, this number will be reduced
+   * by the amount that the user obtains. When this number drops to zero,
+   * the user may not obtain more counts of this property. */
+  amountInStock?: number;
+  isDeleted?: boolean;
 }
 
 export type PropertyDocument = MongoDocument<PropertyProps>;
@@ -30,23 +37,21 @@ const propertySchema = new Schema<PropertyDocument>(
     userId: {
       type: Schema.Types.ObjectId,
       required: true,
-      unique: true,
+      ref: "User",
+      index: true,
     },
-    points: {
+    name: {
+      type: String,
+      required: true,
+    },
+    description: String,
+    amount: {
       type: Number,
       required: true,
       default: 0,
     },
-    numTransactions: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    maxTransactions: {
-      type: Number,
-      required: true,
-      default: defaultUserLimits.maxTransactions,
-    },
+    amountInStock: Number,
+    isDeleted: Boolean,
   },
   {
     timestamps: true,
@@ -55,6 +60,8 @@ const propertySchema = new Schema<PropertyDocument>(
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
+        delete ret.isDeleted;
+        delete ret.userId;
       },
       versionKey: false,
     },
@@ -72,11 +79,12 @@ propertySchema.static("build", build);
 propertySchema.pre<PropertyDocument>(
   "save",
   async function (done: HookNextFunction) {
-    // If the user has the maximum transaction count, throw an error
-    if (this.numTransactions > this.maxTransactions) {
+    // If the user does not have enough property in stock, throw an error
+    if (this.amountInStock && this.amountInStock < 0) {
       throw new UnprocessableEntityError(
-        `You reached the maximum transaction count ${this.maxTransactions}. ` +
-          "Please email Jimmy to apply for a quota increase."
+        `Sorry, you don't have enough stock for property ${this.name} left. ` +
+          "If you still need to process this change in property, please update " +
+          "the in stock setting of this item."
       );
     }
     done();

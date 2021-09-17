@@ -2,7 +2,7 @@
  * Created by Jimmy Lan
  * Creation Date: 2021-08-21
  * Description:
- *   Route to create a transaction and update points count for the current
+ *   Route to create a transaction and update property amount for the current
  *   user.
  */
 
@@ -11,7 +11,7 @@ import { body } from "express-validator";
 import mongoose from "mongoose";
 import { ResBody } from "../../types";
 import { validateRequest } from "../../middlewares";
-import { Property, Transaction } from "../../models";
+import { Property, Transaction, TransactionDocument } from "../../models";
 import { NotFoundError } from "../../errors";
 
 const router = Router();
@@ -19,67 +19,69 @@ const router = Router();
 router.post(
   "/",
   [
-    body("title").optional().isString().isLength({ min: 2, max: 80 }),
-    body("pointsChange").isNumeric().not().equals("0").not().isString(),
+    body("propertyId")
+      .isString()
+      .isMongoId()
+      .withMessage("Property ID must be a valid object ID."),
+    body("title")
+      .optional()
+      .isString()
+      .isLength({ min: 2, max: 80 })
+      .withMessage(
+        "Title must be a valid string with length between 2 and 80."
+      ),
+    body("amountChange").isNumeric().not().equals("0").not().isString(),
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
-    const { title, pointsChange } = req.body;
-    const { id } = req.user!;
+    const { title, amountChange, propertyId } = req.body;
+    const user = req.user!;
 
     // These values will be populated and returned
-    let createdTransaction = {};
-    let newPoints = 0;
+    let transaction: TransactionDocument;
+
+    // Find the property of interest
+    const property = await Property.findOne({
+      userId: user.id,
+      _id: propertyId,
+    });
+    if (!property) {
+      throw new NotFoundError("Could not locate this property.");
+    }
 
     /*
      * We should perform the following in this function:
      * - (1) Create a new transaction for the current user, recording
-     *   the title of this transaction, if given, and points change.
-     * - (2) Update the number of points that the user has.
+     *   the information about this transaction.
+     * - (2) Update the amount of property that the user has.
      * These operations should be atomic. For example, if (2) fails, we
      * should revert operation (1).
      */
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // === Add user points
-      const property = await Property.findOne({ userId: id }, null, {
-        session,
-      });
-      if (!property) {
-        throw new NotFoundError(
-          "Could not locate property data for the current user."
-        );
+      property.amount += amountChange;
+      if (property.amountInStock) {
+        property.amountInStock -= amountChange;
       }
-
-      property.points += pointsChange;
-      property.numTransactions++;
-      const savedProperty = await property.save();
-      newPoints = savedProperty.points;
+      await property.save({ session });
       // === END Add user points
 
       // === Add transaction
-      createdTransaction = (
-        await Transaction.create(
-          [
-            {
-              userId: id,
-              title: title || "Untitled transaction",
-              pointsChange,
-            },
-          ],
-          { session }
-        )
-      )[0];
+      transaction = Transaction.build({
+        userId: user.id,
+        title: title || "Untitled transaction",
+        amountChange,
+        property,
+      });
+      await transaction.save({ session });
       // === END Add transaction
     });
     session.endSession();
 
     return res.status(201).json({
       success: true,
-      payload: {
-        transaction: createdTransaction,
-        points: newPoints,
-      },
+      payload: transaction!,
     });
   }
 );

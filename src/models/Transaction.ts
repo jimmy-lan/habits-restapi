@@ -6,15 +6,18 @@
 
 import mongoose, { Model, Schema } from "mongoose";
 import { MongoDocument } from "../types";
+import { PropertyDocument } from "./Property";
 
 export interface TransactionProps {
   /** ID of the user who owns this transaction. */
   userId: string;
   /** Title of this transaction. */
   title?: string;
-  /** Change in points. A positive number means points are added.
-   * A negative number means points are deducted. */
-  pointsChange: number;
+  /** Property that this transaction applies to. */
+  property: string | PropertyDocument;
+  /** Change in property amount. A positive number means an increase in amount.
+   * A negative number means a deduction of amount. */
+  amountChange: number;
   isDeleted?: boolean;
 }
 
@@ -23,7 +26,7 @@ export type TransactionDocument = MongoDocument<TransactionProps>;
 const transactionSchema = new Schema<TransactionDocument>(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "User",
       index: true,
@@ -34,7 +37,13 @@ const transactionSchema = new Schema<TransactionDocument>(
       max: 80,
       min: 2,
     },
-    pointsChange: {
+    property: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "Property",
+      index: true,
+    },
+    amountChange: {
       type: Number,
       required: true,
     },
