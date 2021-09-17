@@ -7,16 +7,17 @@
  */
 
 import { Request, Response, Router } from "express";
-import { validatePagination } from "../../middlewares";
 import { Transaction } from "../../models";
-import { notDeletedCondition } from "../../util";
+import { notDeletedCondition, validators } from "../../util";
 import { ResBody } from "../../types";
+import { validateRequest } from "../../middlewares";
 
 const router = Router();
 
 router.get(
   "/",
-  validatePagination,
+  [validators.pageLimit, validators.pageSkip],
+  validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { skip, limit } = req.query;
     const user = req.user!;
