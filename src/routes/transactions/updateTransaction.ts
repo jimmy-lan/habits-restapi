@@ -31,7 +31,6 @@ const updatePropertyAmount = async (
     property.amountInStock -= diffAmount;
   }
   await property.save({ session });
-  return property.amount;
 };
 
 const getDiffAmount = (oldAmount: number, newAmount: number) => {
@@ -42,10 +41,6 @@ router.patch(
   "/:transactionId",
   [
     param("transactionId").notEmpty().isMongoId(),
-    body("propertyId")
-      .isString()
-      .isMongoId()
-      .withMessage("Property ID must be a valid object ID."),
     body("title")
       .optional()
       .isString()
@@ -58,7 +53,7 @@ router.patch(
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { transactionId } = req.params;
-    const { title, amountChange, propertyId } = req.body;
+    const { title, amountChange } = req.body;
     const user = req.user!;
 
     // Find transaction
@@ -86,10 +81,6 @@ router.patch(
       diffAmount = getDiffAmount(transaction.amountChange, amountChange);
     }
 
-    // Total property amount that the user has after this operation.
-    // This will be defined & returned if `diffAmount` is not 0.
-    let newAmount = undefined;
-
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // === Update transaction document
@@ -104,7 +95,7 @@ router.patch(
 
       // === Update user points, if needed
       if (diffAmount) {
-        newAmount = updatePropertyAmount(
+        await updatePropertyAmount(
           user.id,
           transactionProperty._id as string,
           diffAmount,
@@ -120,7 +111,6 @@ router.patch(
       payload: {
         transaction,
         updatedFrom: oldTransaction,
-        amount: newAmount,
       },
     });
   }

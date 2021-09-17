@@ -25,9 +25,6 @@ router.delete(
     const { transactionId } = req.params;
     const user = req.user!;
 
-    // These values will be populated before return
-    let newAmount = 0;
-
     // Find documents needed for this route
     const transaction = await Transaction.findOne({
       _id: transactionId,
@@ -66,7 +63,6 @@ router.delete(
           property.amountInStock += transaction.amountChange;
         }
         await property.save({ session });
-        newAmount = property.amount;
       }
       // === END Update user points
     });
@@ -74,10 +70,7 @@ router.delete(
 
     return res.status(202).json({
       success: true,
-      payload: {
-        transaction,
-        amount: newAmount,
-      },
+      payload: transaction,
     });
   }
 );

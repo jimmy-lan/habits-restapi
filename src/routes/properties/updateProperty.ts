@@ -103,6 +103,9 @@ router.patch(
       throw new NotFoundError("Could not locate this property.");
     }
 
+    // Create a copy of the property to send as part of the response.
+    const oldProperty = property.toJSON();
+
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // === Create a transaction if amount is modified
@@ -128,7 +131,10 @@ router.patch(
 
     return res.json({
       success: true,
-      payload: property,
+      payload: {
+        property,
+        updatedFrom: oldProperty,
+      },
     });
   }
 );
