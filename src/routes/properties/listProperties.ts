@@ -14,7 +14,11 @@ const router = Router();
 
 router.get(
   "/",
-  [validators.pageLimit, validators.pageSkip, query("fields").isArray()],
+  [
+    validators.pageLimit,
+    validators.pageSkip,
+    query("fields").isArray({ max: 10 }),
+  ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { skip, limit } = req.query;
