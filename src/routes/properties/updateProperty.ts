@@ -41,9 +41,15 @@ const assignFieldsToProperty = (
     terminateIfExact("name", property.name, name);
     property.name = name;
   }
-  if (description) {
+  if (description !== undefined) {
     terminateIfExact("description", property.description, description);
-    property.description = description;
+    if (description) {
+      property.description = description;
+    } else {
+      // This is the case when `description` is an empty value.
+      // This indicates that the user wants to remove this field.
+      delete property.description;
+    }
   }
   if (amount !== undefined) {
     terminateIfExact("amount", property.amount, amount);
@@ -51,7 +57,11 @@ const assignFieldsToProperty = (
   }
   if (amountInStock) {
     terminateIfExact("amount in stock", property.amountInStock, amountInStock);
-    property.amountInStock = amountInStock;
+    if (amountInStock >= 0) {
+      property.amountInStock = amountInStock;
+    } else {
+      delete property.amountInStock;
+    }
   }
 };
 
