@@ -43,13 +43,9 @@ const assignFieldsToProperty = (
   }
   if (description !== undefined) {
     terminateIfExact("description", property.description, description);
-    if (description) {
-      property.description = description;
-    } else {
-      // This is the case when `description` is an empty value.
-      // This indicates that the user wants to remove this field.
-      delete property.description;
-    }
+    // This statement will delete `description` key from the property doc when
+    // `description` is an empty string, as specified in comment of handlers.
+    property.description = description || undefined;
   }
   if (amount !== undefined) {
     terminateIfExact("amount", property.amount, amount);
@@ -57,11 +53,7 @@ const assignFieldsToProperty = (
   }
   if (amountInStock) {
     terminateIfExact("amount in stock", property.amountInStock, amountInStock);
-    if (amountInStock >= 0) {
-      property.amountInStock = amountInStock;
-    } else {
-      delete property.amountInStock;
-    }
+    property.amountInStock = amountInStock >= 0 ? amountInStock : undefined;
   }
 };
 
