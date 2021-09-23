@@ -62,13 +62,14 @@ const validationHandlers = [
     .notEmpty({ ignore_whitespace: true })
     .withMessage("Name of property must be a non-empty string.")
     .optional(),
+  // Empty description will remove the `description` field of this property.
   body("description")
     .isString()
-    .notEmpty({ ignore_whitespace: true })
     .withMessage("Description of property must be a non-empty string.")
     .optional(),
   body("amount").isFloat({ min: 0 }).not().isString().optional(),
-  body("amountInStock").isFloat({ min: 0 }).not().isString().optional(),
+  // A negative number will remove the `amountInStock` field of this property
+  body("amountInStock").isFloat().not().isString().optional(),
 ];
 
 /**
@@ -86,7 +87,7 @@ router.patch(
     const user = req.user!;
 
     const definedValues = [name, description, amount, amountInStock].filter(
-      (value) => !!value
+      (value) => value !== undefined
     );
     if (!definedValues.length) {
       throw new UnprocessableEntityError(
