@@ -69,7 +69,7 @@ const validationHandlers = [
     .isString()
     .withMessage("Description of property must be a non-empty string.")
     .optional(),
-  body("amount").isFloat({ min: 0 }).not().isString().optional(),
+  body("amount").isFloat().not().isString().optional(),
   // A negative number will remove the `amountInStock` field of this property
   body("amountInStock").isFloat().not().isString().optional(),
 ];
