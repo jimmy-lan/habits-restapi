@@ -70,6 +70,7 @@ router.get(
 
     const transactions = await Transaction.find(findCondition)
       .sort({ createdAt: "desc" })
+      .populate("property", "name")
       .limit(Math.min(findLimit, fixedQuota.maxPageSize))
       .skip(findSkip)
       .exec();
