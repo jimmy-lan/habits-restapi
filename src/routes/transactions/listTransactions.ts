@@ -16,6 +16,12 @@ import { NotFoundError } from "../../errors";
 
 const router = Router();
 
+/**
+ * Query property with `propertyId` that belongs to the user with `userId`.
+ * Return `undefined` if `propertyId` is `undefined` or a null value.
+ * Throw an error if property is not found.
+ * @throws NotFoundError Whenever property is not found.
+ */
 const queryProperty = async (userId: string, propertyId?: string) => {
   let property: PropertyDocument | undefined;
   if (propertyId) {
@@ -46,9 +52,8 @@ router.get(
     const { skip, limit, propertyId } = req.query;
     const user = req.user!;
 
-    // === Query requested property
-
-    // === END Query requested property
+    // Query requested property
+    const property = await queryProperty(user.id, propertyId as string);
 
     // === Query transactions
     const findLimit: number = limit ? Number(limit) : 0;
