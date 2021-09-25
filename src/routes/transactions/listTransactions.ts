@@ -20,17 +20,17 @@ router.get(
   [
     validators.pageLimit,
     validators.pageSkip,
-    query("propertyId").isString().isMongoId(),
+    query("propertyId").isString().isMongoId().optional(),
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
-    const { skip, limit } = req.query;
+    const { skip, limit, propertyId } = req.query;
     const user = req.user!;
 
+    // === Query transactions
     const findLimit: number = limit ? Number(limit) : 0;
     const findSkip: number = skip ? Number(skip) : 0;
 
-    // Query transactions
     const transactions = await Transaction.find({
       userId: user.id,
       ...notDeletedCondition,
@@ -39,6 +39,7 @@ router.get(
       .limit(findLimit)
       .skip(findSkip)
       .exec();
+    // === END Query transactions
 
     return res.send({
       success: true,
