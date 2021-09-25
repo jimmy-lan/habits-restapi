@@ -13,6 +13,7 @@ import { ResBody } from "../../types";
 import { validateRequest } from "../../middlewares";
 import { query } from "express-validator";
 import { NotFoundError } from "../../errors";
+import { fixedQuota } from "../../config";
 
 const router = Router();
 
@@ -69,7 +70,7 @@ router.get(
 
     const transactions = await Transaction.find(findCondition)
       .sort({ createdAt: "desc" })
-      .limit(findLimit)
+      .limit(Math.min(findLimit, fixedQuota.maxPageSize))
       .skip(findSkip)
       .exec();
     // === END Query transactions
