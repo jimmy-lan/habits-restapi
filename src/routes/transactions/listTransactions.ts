@@ -7,13 +7,32 @@
  */
 
 import { Request, Response, Router } from "express";
-import { Transaction } from "../../models";
+import { Property, PropertyDocument, Transaction } from "../../models";
 import { notDeletedCondition, validators } from "../../util";
 import { ResBody } from "../../types";
 import { validateRequest } from "../../middlewares";
 import { query } from "express-validator";
+import { NotFoundError } from "../../errors";
 
 const router = Router();
+
+const queryProperty = async (userId: string, propertyId?: string) => {
+  let property: PropertyDocument | undefined;
+  if (propertyId) {
+    const _property = await Property.findOne({
+      _id: propertyId as string,
+      userId,
+      ...notDeletedCondition,
+    });
+    if (!_property) {
+      throw new NotFoundError(
+        `Could not locate property with ID ${propertyId}.`
+      );
+    }
+    property = _property;
+  }
+  return property;
+};
 
 router.get(
   "/",
@@ -27,14 +46,23 @@ router.get(
     const { skip, limit, propertyId } = req.query;
     const user = req.user!;
 
+    // === Query requested property
+
+    // === END Query requested property
+
     // === Query transactions
     const findLimit: number = limit ? Number(limit) : 0;
     const findSkip: number = skip ? Number(skip) : 0;
 
-    const transactions = await Transaction.find({
+    const findCondition: Record<string, any> = {
       userId: user.id,
       ...notDeletedCondition,
-    })
+    };
+    if (property) {
+      findCondition.property = property;
+    }
+
+    const transactions = await Transaction.find(findCondition)
       .sort({ createdAt: "desc" })
       .limit(findLimit)
       .skip(findSkip)
