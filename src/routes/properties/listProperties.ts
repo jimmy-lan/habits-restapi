@@ -8,6 +8,7 @@ import { ResBody } from "../../types";
 import { Property } from "../../models";
 import { validateRequest } from "../../middlewares";
 import { notDeletedCondition, validators } from "../../util";
+import { fixedQuota } from "../../config";
 
 const router = Router();
 
@@ -28,7 +29,7 @@ router.get(
     })
       .sort({ createdAt: "desc" })
       .skip(findSkip)
-      .limit(findLimit)
+      .limit(Math.max(findLimit, fixedQuota.maxPageSize))
       .exec();
 
     return res.json({
