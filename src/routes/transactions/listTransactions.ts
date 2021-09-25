@@ -11,12 +11,17 @@ import { Transaction } from "../../models";
 import { notDeletedCondition, validators } from "../../util";
 import { ResBody } from "../../types";
 import { validateRequest } from "../../middlewares";
+import { query } from "express-validator";
 
 const router = Router();
 
 router.get(
   "/",
-  [validators.pageLimit, validators.pageSkip],
+  [
+    validators.pageLimit,
+    validators.pageSkip,
+    query("propertyId").isString().isMongoId(),
+  ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { skip, limit } = req.query;
