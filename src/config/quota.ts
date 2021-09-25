@@ -15,3 +15,11 @@ export const defaultQuota = {
   maxProperties: 100,
   maxDeletedProperties: 100,
 };
+
+/**
+ * Fixed limits that are shared across the entire backend app.
+ */
+export const fixedQuota = {
+  /** Maximum number of items to return on a list route. */
+  maxPageSize: 100,
+};
