@@ -7,11 +7,11 @@
  */
 
 import { Request, Response, Router } from "express";
+import { query } from "express-validator";
 import { Property, PropertyDocument, Transaction } from "../../models";
 import { notDeletedCondition, validators } from "../../util";
 import { ResBody } from "../../types";
 import { validateRequest } from "../../middlewares";
-import { query } from "express-validator";
 import { NotFoundError } from "../../errors";
 import { fixedQuota } from "../../config";
 
