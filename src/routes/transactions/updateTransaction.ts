@@ -62,7 +62,7 @@ router.patch(
       userId: user.id,
       ...notDeletedCondition,
     })
-      .populate("property", "_id name")
+      .populate("property", "name")
       .exec();
     if (!transaction) {
       throw new NotFoundError(
