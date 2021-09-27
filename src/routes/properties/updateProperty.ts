@@ -67,7 +67,7 @@ const validationHandlers = [
   // Empty description will remove the `description` field of this property.
   body("description")
     .isString()
-    .withMessage("Description of property must be a non-empty string.")
+    .withMessage("Description of property must be a string.")
     .optional(),
   body("amount").isFloat().not().isString().optional(),
   // A negative number will remove the `amountInStock` field of this property
