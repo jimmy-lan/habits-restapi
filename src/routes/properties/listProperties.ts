@@ -7,7 +7,7 @@ import { Request, Response, Router } from "express";
 import { ResBody } from "../../types";
 import { Property } from "../../models";
 import { validateRequest } from "../../middlewares";
-import { validators } from "../../util";
+import { notDeletedCondition, validators } from "../../util";
 
 const router = Router();
 
@@ -22,7 +22,10 @@ router.get(
     const findLimit: number = limit ? Number(limit) : 0;
     const findSkip: number = skip ? Number(skip) : 0;
 
-    const properties = await Property.find({ userId: user.id })
+    const properties = await Property.find({
+      userId: user.id,
+      ...notDeletedCondition,
+    })
       .sort({ createdAt: "desc" })
       .skip(findSkip)
       .limit(findLimit)
