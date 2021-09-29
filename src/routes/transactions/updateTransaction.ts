@@ -27,7 +27,7 @@ const updatePropertyAmount = async (
     throw new NotFoundError("Could not locate property data.");
   }
   property.amount += diffAmount;
-  if (property.amountInStock) {
+  if (property.amountInStock !== undefined) {
     property.amountInStock -= diffAmount;
   }
   await property.save({ session });
