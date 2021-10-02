@@ -22,7 +22,7 @@ router.post(
       ),
     body("description")
       .isString()
-      .isLength({ min: 2, max: 100 })
+      .isLength({ min: 2, max: 280 })
       .withMessage(
         "Property description must be a string of length between 2 and 100."
       )
