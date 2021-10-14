@@ -48,7 +48,13 @@ router.patch(
       .withMessage(
         "Title must be a valid string with length between 2 and 80."
       ),
-    body("amountChange").isNumeric().not().equals("0").not().isString(),
+    body("amountChange")
+      .optional()
+      .isNumeric()
+      .not()
+      .equals("0")
+      .not()
+      .isString(),
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
