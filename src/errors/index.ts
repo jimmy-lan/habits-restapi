@@ -12,3 +12,4 @@ export * from "./NotFoundError";
 export * from "./UnauthorizedError";
 export * from "./UnprocessableEntityError";
 export * from "./RateLimitedError";
+export * from "./QuotaExceededError";
