@@ -19,17 +19,17 @@ import { defaultQuota } from "../config";
 interface QuotaProps {
   userId: string;
   /** Number of deleted transactions. */
-  numDeletedTransactions: number;
-  maxDeletedTransactions: number;
+  numDeletedTransactions?: number;
+  maxDeletedTransactions?: number;
   /** Number of available (not-deleted) transactions. */
-  numTransactions: number;
-  maxTransactions: number;
+  numTransactions?: number;
+  maxTransactions?: number;
   /** Number of deleted properties. */
-  numDeletedProperties: number;
-  maxDeletedProperties: number;
+  numDeletedProperties?: number;
+  maxDeletedProperties?: number;
   /** Number of available (not-deleted) properties. */
-  numProperties: number;
-  maxProperties: number;
+  numProperties?: number;
+  maxProperties?: number;
 }
 
 export type QuotaDocument = MongoDocument<QuotaProps>;
