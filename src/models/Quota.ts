@@ -16,20 +16,17 @@ import { MongoDocument } from "../types";
 import mongoose, { Model, Schema } from "mongoose";
 import { defaultQuota } from "../config";
 
-interface QuotaProps {
+interface QuotaRecord {
+  transactions: number;
+  transactionsDeleted: number;
+  properties: number;
+  propertiesDeleted: number;
+}
+
+export interface QuotaProps {
   userId: string;
-  /** Number of deleted transactions. */
-  numDeletedTransactions?: number;
-  maxDeletedTransactions?: number;
-  /** Number of available (not-deleted) transactions. */
-  numTransactions?: number;
-  maxTransactions?: number;
-  /** Number of deleted properties. */
-  numDeletedProperties?: number;
-  maxDeletedProperties?: number;
-  /** Number of available (not-deleted) properties. */
-  numProperties?: number;
-  maxProperties?: number;
+  limit?: Partial<QuotaRecord>;
+  usage?: Partial<QuotaRecord>;
 }
 
 export type QuotaDocument = MongoDocument<QuotaProps>;
