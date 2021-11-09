@@ -17,6 +17,7 @@ import mongoose, { Model, Schema } from "mongoose";
 import { defaultQuota } from "../config";
 
 interface QuotaProps {
+  userId: string;
   /** Number of deleted transactions. */
   numDeletedTransactions: number;
   maxDeletedTransactions: number;
@@ -41,6 +42,12 @@ const getQuotaField = (defaultValue?: number) => ({
 
 const quotaSchema = new Schema<QuotaDocument>(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+      index: true,
+    },
     numDeletedTransactions: getQuotaField(),
     maxDeletedTransactions: getQuotaField(defaultQuota.maxDeletedTransactions),
     numTransactions: getQuotaField(),
