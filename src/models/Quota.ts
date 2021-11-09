@@ -7,7 +7,7 @@
  */
 
 import { MongoDocument } from "../types";
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { ClientSession, Model, Schema } from "mongoose";
 import { defaultQuota } from "../config";
 
 // The deleted counts are not shown to the user, but if the
@@ -22,7 +22,7 @@ interface QuotaRecord {
   propertiesDeleted: number;
 }
 
-export interface QuotaProps {
+interface QuotaProps {
   userId: string;
   limit?: Partial<QuotaRecord>;
   usage?: Partial<QuotaRecord>;
@@ -72,12 +72,26 @@ const quotaSchema = new Schema<QuotaDocument>(
 
 export interface QuotaModel extends Model<QuotaDocument> {
   build(props: QuotaProps): QuotaDocument;
+
+  findOrCreateOne(
+    userId: string,
+    session?: ClientSession
+  ): Promise<QuotaDocument>;
 }
 
 const build = (props: QuotaProps) => {
   return new Quota(props);
 };
+const findOrCreateOne = async (userId: string, session?: ClientSession) => {
+  let quota = await Quota.findOne({ userId }, null, { session });
+  if (!quota) {
+    quota = Quota.build({ userId });
+    await quota.save({ session });
+  }
+  return quota;
+};
 quotaSchema.static("build", build);
+quotaSchema.static("findOrCreateOne", findOrCreateOne);
 
 export const Quota = mongoose.model<QuotaDocument, QuotaModel>(
   "Quota",
