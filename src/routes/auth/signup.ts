@@ -7,7 +7,13 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 
 import { AuthResBody, UserRole } from "../../types";
-import { Invitation, InvitationDocument, Property, User } from "../../models";
+import {
+  Invitation,
+  InvitationDocument,
+  Property,
+  Quota,
+  User,
+} from "../../models";
 import { validateRequest } from "../../middlewares";
 import { BadRequestError, UnprocessableEntityError } from "../../errors";
 import { PasswordEncoder } from "../../services";
@@ -111,16 +117,19 @@ router.post(
 
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
-      // Save new user
-      const savedUser = await user.save({ session });
+      await user.save({ session });
 
-      // Create a default property
       const defaultProperty = Property.build({
-        userId: savedUser.id,
+        userId: user.id,
         name: "points",
         amount: 0,
       });
       await defaultProperty.save({ session });
+
+      const quota = Quota.build({
+        userId: user.id,
+      });
+      await quota.save({ session });
     });
     session.endSession();
 
