@@ -6,16 +6,15 @@
  *    that they can use. Users can apply for a quota increase by emailing us.
  */
 
+import { MongoDocument } from "../types";
+import mongoose, { Model, Schema } from "mongoose";
+import { defaultQuota } from "../config";
+
 // The deleted counts are not shown to the user, but if the
 // amount of deleted items are suspicious, we suspend the user's
 // account for investigation. The `max` quota for deleted items are
 // checked by scheduled workers, and the `num` value will be cleared
 // after scheduled checks are completed.
-
-import { MongoDocument } from "../types";
-import mongoose, { Model, Schema } from "mongoose";
-import { defaultQuota } from "../config";
-
 interface QuotaRecord {
   transactions: number;
   transactionsDeleted: number;
