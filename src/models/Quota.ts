@@ -7,8 +7,14 @@
  */
 
 import { MongoDocument } from "../types";
-import mongoose, { ClientSession, Model, Schema } from "mongoose";
+import mongoose, {
+  ClientSession,
+  HookNextFunction,
+  Model,
+  Schema,
+} from "mongoose";
 import { defaultQuota } from "../config";
+import { QuotaExceededError } from "../errors";
 
 // The deleted counts are not shown to the user, but if the
 // amount of deleted items are suspicious, we suspend the user's
@@ -69,6 +75,24 @@ const quotaSchema = new Schema<QuotaDocument>(
     },
   }
 );
+
+quotaSchema.pre<QuotaDocument>("save", function (done: HookNextFunction) {
+  const changes = this.getChanges();
+  if (!changes.usage) {
+    return done();
+  }
+
+  const quotaFieldsToCheck = Object.keys(
+    changes.usage
+  ) as (keyof QuotaRecord)[];
+  for (const quotaField of quotaFieldsToCheck) {
+    const fieldUsage = this.usage![quotaField];
+    const fieldLimit = this.limit![quotaField];
+    if (fieldUsage > fieldLimit) {
+      throw new QuotaExceededError();
+    }
+  }
+});
 
 export interface QuotaModel extends Model<QuotaDocument> {
   build(props: QuotaProps): QuotaDocument;
