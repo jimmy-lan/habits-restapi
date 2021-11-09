@@ -18,9 +18,10 @@ import { QuotaExceededError } from "../errors";
 
 // The deleted counts are not shown to the user, but if the
 // amount of deleted items are suspicious, we suspend the user's
-// account for investigation. The `max` quota for deleted items are
-// checked by scheduled workers, and the `num` value will be cleared
-// after scheduled checks are completed.
+// account for investigation. The `limit` quota for deleted items are
+// checked by scheduled workers, and the `usage` value for deleted items
+// will be cleared after scheduled checks are completed.
+
 interface QuotaRecord {
   transactions: number;
   transactionsDeleted: number;
