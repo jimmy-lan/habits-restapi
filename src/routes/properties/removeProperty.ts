@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Request, Response, Router } from "express";
 import { param } from "express-validator";
 import { validateRequest } from "../../middlewares";
-import { Property, Transaction } from "../../models";
+import { Property, Quota, Transaction } from "../../models";
 import { notDeletedCondition } from "../../util";
 import { NotFoundError } from "../../errors";
 
@@ -37,6 +37,13 @@ router.delete(
       property.isDeleted = true;
       await property.save({ session });
       // === END Soft delete property
+
+      // === Update quota
+      const quota = await Quota.findOrCreateOne(user.id, session);
+      quota.usage.properties -= 1;
+      quota.usage.propertiesDeleted += 1;
+      await quota.save({ session });
+      // === END Update quota
 
       // === Soft delete all transactions with this property
       const writeResult = await Transaction.updateMany(
