@@ -25,7 +25,6 @@ router.delete(
     const { transactionId } = req.params;
     const user = req.user!;
 
-    // Find documents needed for this route
     const transaction = await Transaction.findOne({
       _id: transactionId,
       userId: user.id,
@@ -42,13 +41,6 @@ router.delete(
       ...notDeletedCondition,
     });
 
-    /*
-     * We should perform the following in this function:
-     * - (1) Set the target transaction as deleted.
-     * - (2) Update the property amount that the user has in the Users
-     *   document after the transaction is reverted.
-     * These operations should be atomic.
-     */
     const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // === Soft delete transaction
