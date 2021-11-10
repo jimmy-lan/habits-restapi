@@ -11,7 +11,12 @@ import { body } from "express-validator";
 import mongoose from "mongoose";
 import { ResBody } from "../../types";
 import { validateRequest } from "../../middlewares";
-import { Property, Transaction, TransactionDocument } from "../../models";
+import {
+  Property,
+  Quota,
+  Transaction,
+  TransactionDocument,
+} from "../../models";
 import { NotFoundError } from "../../errors";
 
 const router = Router();
@@ -67,6 +72,12 @@ router.post(
       });
       await transaction.save({ session });
       // === END Add transaction
+
+      // === Update quota
+      const quota = await Quota.findOrCreateOne(user.id, session);
+      quota.usage.transactions += 1;
+      await quota.save({ session });
+      // === END Update quota
     });
     session.endSession();
 
