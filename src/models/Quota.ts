@@ -31,8 +31,8 @@ interface QuotaRecord {
 
 interface QuotaProps {
   userId: string;
-  limit?: Partial<QuotaRecord>;
-  usage?: Partial<QuotaRecord>;
+  limit: QuotaRecord;
+  usage: QuotaRecord;
 }
 
 export type QuotaDocument = MongoDocument<QuotaProps>;
@@ -96,7 +96,7 @@ quotaSchema.pre<QuotaDocument>("save", function (done: HookNextFunction) {
 });
 
 export interface QuotaModel extends Model<QuotaDocument> {
-  build(props: QuotaProps): QuotaDocument;
+  build(props: Partial<QuotaProps>): QuotaDocument;
 
   findOrCreateOne(
     userId: string,
@@ -104,7 +104,7 @@ export interface QuotaModel extends Model<QuotaDocument> {
   ): Promise<QuotaDocument>;
 }
 
-const build = (props: QuotaProps) => {
+const build = (props: Partial<QuotaProps>) => {
   return new Quota(props);
 };
 const findOrCreateOne = async (userId: string, session?: ClientSession) => {
