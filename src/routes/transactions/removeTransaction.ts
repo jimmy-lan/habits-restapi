@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 import { param } from "express-validator";
 import { validateRequest } from "../../middlewares";
 import { ResBody } from "../../types";
-import { Property, Transaction } from "../../models";
+import { Property, Quota, Transaction } from "../../models";
 import { NotFoundError } from "../../errors";
 import { notDeletedCondition } from "../../util";
 
@@ -57,6 +57,13 @@ router.delete(
         await property.save({ session });
       }
       // === END Update user points
+
+      // === Update quota
+      const quota = await Quota.findOrCreateOne(user.id, session);
+      quota.usage.transactions -= 1;
+      quota.usage.transactionsDeleted += 1;
+      await quota.save({ session });
+      // === END Update quota
     });
     session.endSession();
 
