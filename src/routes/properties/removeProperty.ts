@@ -27,7 +27,7 @@ router.delete(
     }
 
     // These values will be populated and returned
-    let numDeleted = 0;
+    let numTransactionsAffected = 0;
 
     // We need to remove the property together with all transactions
     // for this property.
@@ -37,13 +37,6 @@ router.delete(
       property.isDeleted = true;
       await property.save({ session });
       // === END Soft delete property
-
-      // === Update quota
-      const quota = await Quota.findOrCreateOne(user.id, session);
-      quota.usage.properties -= 1;
-      quota.usage.propertiesDeleted += 1;
-      await quota.save({ session });
-      // === END Update quota
 
       // === Soft delete all transactions with this property
       const writeResult = await Transaction.updateMany(
@@ -55,8 +48,17 @@ router.delete(
         { $set: { isDeleted: true } },
         { session }
       );
-      numDeleted = writeResult.nModified;
+      numTransactionsAffected = writeResult.nModified;
       // === END Soft delete all transactions with this property
+
+      // === Update quota
+      const quota = await Quota.findOrCreateOne(user.id, session);
+      quota.usage.properties -= 1;
+      quota.usage.propertiesDeleted += 1;
+      quota.usage.transactions -= numTransactionsAffected;
+      quota.usage.transactionsDeleted += numTransactionsAffected;
+      await quota.save({ session });
+      // === END Update quota
     });
     session.endSession();
 
@@ -64,7 +66,7 @@ router.delete(
       success: true,
       payload: {
         property,
-        numDeleted,
+        numTransactionsAffected,
       },
     });
   }
