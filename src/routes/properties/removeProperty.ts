@@ -45,7 +45,8 @@ router.delete(
           property: propertyId,
           ...notDeletedCondition,
         },
-        { $set: { isDeleted: true } }
+        { $set: { isDeleted: true } },
+        { session }
       );
       numDeleted = writeResult.nModified;
       // === END Soft delete all transactions with this property
