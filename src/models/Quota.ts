@@ -6,29 +6,33 @@
  *    that they can use. Users can apply for a quota increase by emailing us.
  */
 
+import { MongoDocument } from "../types";
+import mongoose, {
+  ClientSession,
+  HookNextFunction,
+  Model,
+  Schema,
+} from "mongoose";
+import { defaultQuota } from "../config";
+import { QuotaExceededError } from "../errors";
+
 // The deleted counts are not shown to the user, but if the
 // amount of deleted items are suspicious, we suspend the user's
-// account for investigation. The `max` quota for deleted items are
-// checked by scheduled workers, and the `num` value will be cleared
-// after scheduled checks are completed.
+// account for investigation. The `limit` quota for deleted items are
+// checked by scheduled workers, and the `usage` value for deleted items
+// will be cleared after scheduled checks are completed.
 
-import { MongoDocument } from "../types";
-import mongoose, { Model, Schema } from "mongoose";
-import { defaultQuota } from "../config";
+interface QuotaRecord {
+  transactions: number;
+  transactionsDeleted: number;
+  properties: number;
+  propertiesDeleted: number;
+}
 
 interface QuotaProps {
-  /** Number of deleted transactions. */
-  numDeletedTransactions: number;
-  maxDeletedTransactions: number;
-  /** Number of available (not-deleted) transactions. */
-  numTransactions: number;
-  maxTransactions: number;
-  /** Number of deleted properties. */
-  numDeletedProperties: number;
-  maxDeletedProperties: number;
-  /** Number of available (not-deleted) properties. */
-  numProperties: number;
-  maxProperties: number;
+  userId: string;
+  limit: QuotaRecord;
+  usage: QuotaRecord;
 }
 
 export type QuotaDocument = MongoDocument<QuotaProps>;
@@ -41,14 +45,24 @@ const getQuotaField = (defaultValue?: number) => ({
 
 const quotaSchema = new Schema<QuotaDocument>(
   {
-    numDeletedTransactions: getQuotaField(),
-    maxDeletedTransactions: getQuotaField(defaultQuota.maxDeletedTransactions),
-    numTransactions: getQuotaField(),
-    maxTransactions: getQuotaField(defaultQuota.maxTransactions),
-    numDeletedProperties: getQuotaField(),
-    maxDeletedProperties: getQuotaField(defaultQuota.maxDeletedProperties),
-    numProperties: getQuotaField(),
-    maxProperties: getQuotaField(defaultQuota.maxProperties),
+    userId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+      index: true,
+    },
+    limit: {
+      transactions: getQuotaField(defaultQuota.maxTransactions),
+      transactionsDeleted: getQuotaField(defaultQuota.maxTransactionsDeleted),
+      properties: getQuotaField(defaultQuota.maxProperties),
+      propertiesDeleted: getQuotaField(defaultQuota.maxPropertiesDeleted),
+    },
+    usage: {
+      transactions: getQuotaField(),
+      transactionsDeleted: getQuotaField(),
+      properties: getQuotaField(),
+      propertiesDeleted: getQuotaField(),
+    },
   },
   {
     timestamps: true,
@@ -63,14 +77,46 @@ const quotaSchema = new Schema<QuotaDocument>(
   }
 );
 
+quotaSchema.pre<QuotaDocument>("save", function (done: HookNextFunction) {
+  const changes = this.getChanges();
+  if (!changes.usage) {
+    return done();
+  }
+
+  const quotaFieldsToCheck = Object.keys(
+    changes.usage
+  ) as (keyof QuotaRecord)[];
+  for (const quotaField of quotaFieldsToCheck) {
+    const fieldUsage = this.usage![quotaField];
+    const fieldLimit = this.limit![quotaField];
+    if (fieldUsage > fieldLimit) {
+      throw new QuotaExceededError();
+    }
+  }
+});
+
 export interface QuotaModel extends Model<QuotaDocument> {
-  build(props: QuotaProps): QuotaDocument;
+  build(props: Partial<QuotaProps>): QuotaDocument;
+
+  findOrCreateOne(
+    userId: string,
+    session?: ClientSession
+  ): Promise<QuotaDocument>;
 }
 
-const build = (props: QuotaProps) => {
+const build = (props: Partial<QuotaProps>) => {
   return new Quota(props);
 };
+const findOrCreateOne = async (userId: string, session?: ClientSession) => {
+  let quota = await Quota.findOne({ userId }, null, { session });
+  if (!quota) {
+    quota = Quota.build({ userId });
+    await quota.save({ session });
+  }
+  return quota;
+};
 quotaSchema.static("build", build);
+quotaSchema.static("findOrCreateOne", findOrCreateOne);
 
 export const Quota = mongoose.model<QuotaDocument, QuotaModel>(
   "Quota",

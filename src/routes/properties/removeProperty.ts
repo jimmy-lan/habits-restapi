@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Request, Response, Router } from "express";
 import { param } from "express-validator";
 import { validateRequest } from "../../middlewares";
-import { Property, Transaction } from "../../models";
+import { Property, Quota, Transaction } from "../../models";
 import { notDeletedCondition } from "../../util";
 import { NotFoundError } from "../../errors";
 
@@ -27,7 +27,7 @@ router.delete(
     }
 
     // These values will be populated and returned
-    let numDeleted = 0;
+    let numTransactionsAffected = 0;
 
     // We need to remove the property together with all transactions
     // for this property.
@@ -45,10 +45,20 @@ router.delete(
           property: propertyId,
           ...notDeletedCondition,
         },
-        { $set: { isDeleted: true } }
+        { $set: { isDeleted: true } },
+        { session }
       );
-      numDeleted = writeResult.nModified;
+      numTransactionsAffected = writeResult.nModified;
       // === END Soft delete all transactions with this property
+
+      // === Update quota
+      const quota = await Quota.findOrCreateOne(user.id, session);
+      quota.usage.properties -= 1;
+      quota.usage.propertiesDeleted += 1;
+      quota.usage.transactions -= numTransactionsAffected;
+      quota.usage.transactionsDeleted += numTransactionsAffected;
+      await quota.save({ session });
+      // === END Update quota
     });
     session.endSession();
 
@@ -56,7 +66,7 @@ router.delete(
       success: true,
       payload: {
         property,
-        numDeleted,
+        numTransactionsAffected,
       },
     });
   }
