@@ -78,14 +78,11 @@ const quotaSchema = new Schema<QuotaDocument>(
 );
 
 quotaSchema.pre<QuotaDocument>("save", function (done: HookNextFunction) {
-  const changes = this.getChanges();
-  if (!changes.usage) {
+  if (!this.isModified("usage")) {
     return done();
   }
 
-  const quotaFieldsToCheck = Object.keys(
-    changes.usage
-  ) as (keyof QuotaRecord)[];
+  const quotaFieldsToCheck = Object.keys(this.usage) as (keyof QuotaRecord)[];
   for (const quotaField of quotaFieldsToCheck) {
     const fieldUsage = this.usage![quotaField];
     const fieldLimit = this.limit![quotaField];
