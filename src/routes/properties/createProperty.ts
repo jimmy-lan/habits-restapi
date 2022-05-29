@@ -57,6 +57,7 @@ router.post(
       quota.usage.properties += 1;
       await quota.save({ session });
     });
+    session.endSession();
 
     return res.status(201).json({
       success: true,
