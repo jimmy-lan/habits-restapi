@@ -77,7 +77,7 @@ const quotaSchema = new Schema<QuotaDocument>(
   }
 );
 
-quotaSchema.pre<QuotaDocument>("save", function (done: HookNextFunction) {
+quotaSchema.pre<QuotaDocument>("save", function (this, done: HookNextFunction) {
   if (!this.isModified("usage")) {
     return done();
   }
@@ -90,6 +90,8 @@ quotaSchema.pre<QuotaDocument>("save", function (done: HookNextFunction) {
       throw new QuotaExceededError();
     }
   }
+
+  return done();
 });
 
 export interface QuotaModel extends Model<QuotaDocument> {
@@ -105,10 +107,11 @@ const build = (props: Partial<QuotaProps>) => {
   return new Quota(props);
 };
 const findOrCreateOne = async (userId: string, session?: ClientSession) => {
+  console.log("find or create");
   let quota = await Quota.findOne({ userId }, null, { session });
+  console.log(quota);
   if (!quota) {
     quota = Quota.build({ userId });
-    await quota.save({ session });
   }
   return quota;
 };
