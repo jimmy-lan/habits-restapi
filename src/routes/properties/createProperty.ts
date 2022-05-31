@@ -5,9 +5,10 @@
 import { Request, Response, Router } from "express";
 import { validateRequest } from "../../middlewares";
 import { body } from "express-validator";
-import { Property } from "../../models";
+import { Property, Quota } from "../../models";
 import { UnprocessableEntityError } from "../../errors";
 import { ResBody } from "../../types";
+import mongoose from "mongoose";
 
 const router = Router();
 
@@ -34,7 +35,6 @@ router.post(
     const { name, description, amountInStock } = req.body;
     const user = req.user!;
 
-    // Check if this user already has a property of the same name.
     const existingProperty = await Property.findOne({ userId: user.id, name });
     if (existingProperty) {
       throw new UnprocessableEntityError(
@@ -42,7 +42,6 @@ router.post(
       );
     }
 
-    // Add new property
     const property = Property.build({
       userId: user.id,
       name,
@@ -50,7 +49,15 @@ router.post(
       amount: 0,
       amountInStock,
     });
-    await property.save();
+
+    const session = await mongoose.startSession();
+    await session.withTransaction(async () => {
+      await property.save({ session });
+      const quota = await Quota.findOrCreateOne(user.id, session);
+      quota.usage.properties += 1;
+      await quota.save({ session });
+    });
+    session.endSession();
 
     return res.status(201).json({
       success: true,
