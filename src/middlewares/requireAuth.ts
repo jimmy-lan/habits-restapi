@@ -154,7 +154,7 @@ export const requireAuth = async (
   // Request rate limiting
   try {
     await userRequestRateLimiter.consume(req.user.id, 1);
-  } catch (rateLimiterRes) {
+  } catch (rateLimiterRes: any) {
     setRateLimitErrorHeaders(res, rateLimiterRes);
     throw new RateLimitedError();
   }

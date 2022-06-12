@@ -32,7 +32,7 @@ const checkRateLimit = async (req: Request, res: Response) => {
   try {
     await authBruteIPRateLimiter.consume(ip);
     await passwordResetRateLimiter.consume(emailIPKey);
-  } catch (rateLimiterRes) {
+  } catch (rateLimiterRes: any) {
     if (rateLimiterRes instanceof Error) {
       throw rateLimiterRes;
     }
@@ -94,7 +94,7 @@ const sendPasswordResetEmail = async (
         link,
       })
       .send();
-  } catch (error) {
+  } catch (error: any) {
     console.log(error.response?.body?.errors);
     throw error;
   }
@@ -116,7 +116,7 @@ const sendPasswordResetConfirmationEmail = async (
         name,
       })
       .send();
-  } catch (error) {
+  } catch (error: any) {
     console.log(error.response?.body?.errors);
     throw error;
   }

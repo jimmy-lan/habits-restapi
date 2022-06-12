@@ -43,7 +43,7 @@ router.post(
     try {
       await signInRateLimiter.consume(emailIpPair);
       await authBruteIPRateLimiter.consume(ip);
-    } catch (rateLimiterRes) {
+    } catch (rateLimiterRes: any) {
       if (rateLimiterRes instanceof Error) {
         throw rateLimiterRes;
       }

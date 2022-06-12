@@ -57,7 +57,7 @@ export const signTokens = async (
   if (refreshRecord) {
     try {
       await tokenRefreshRateLimiter.consume(userId, 1);
-    } catch (rateLimiterRes) {
+    } catch (rateLimiterRes: any) {
       // Update 2021-03-12: Make sure the result is usable.
       // Throw internal server error if consume function results in an exception.
       if (rateLimiterRes instanceof Error) {

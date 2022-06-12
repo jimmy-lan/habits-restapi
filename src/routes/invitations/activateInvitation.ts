@@ -24,7 +24,7 @@ router.post(
 
     try {
       await invitationIPRateLimiter.consume(ip);
-    } catch (rateLimiterRes) {
+    } catch (rateLimiterRes: any) {
       setRateLimitErrorHeaders(res, rateLimiterRes);
       throw new RateLimitedError();
     }
