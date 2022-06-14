@@ -8,13 +8,42 @@
 import { Request, Response, Router } from "express";
 import { validateRequest } from "../../middlewares";
 import { body, param } from "express-validator";
-import { ResBody } from "../../types";
+import { MongoDocument, ResBody } from "../../types";
 import { Property, PropertyDocument, Transaction } from "../../models";
 import { notDeletedCondition } from "../../util";
 import { NotFoundError } from "../../errors";
 import mongoose, { ClientSession } from "mongoose";
 
 const router = Router();
+
+const updateOldAndNewPropertyAmount = async (
+  userId: string,
+  oldPropertyId: string,
+  newPropertyId: string,
+  oldAmountChange: number,
+  newAmountChange: number,
+  session: ClientSession
+) => {
+  const oldProperty = await Property.findOne({ _id: oldPropertyId, userId });
+  if (!oldProperty) {
+    throw new NotFoundError("Could not locate old property data.");
+  }
+  oldProperty.amount -= oldAmountChange;
+  if (oldProperty.amountInStock) {
+    oldProperty.amountInStock += oldAmountChange;
+  }
+  await oldProperty.save({ session });
+
+  const newProperty = await Property.findOne({ _id: newPropertyId, userId });
+  if (!newProperty) {
+    throw new NotFoundError("Could not locate new property data.");
+  }
+  newProperty.amount += newAmountChange;
+  if (newProperty.amountInStock) {
+    newProperty.amountInStock -= newAmountChange;
+  }
+  await newProperty.save({ session });
+};
 
 const updatePropertyAmount = async (
   userId: string,
@@ -48,12 +77,19 @@ router.patch(
       .withMessage(
         "Title must be a valid string with length between 2 and 80."
       ),
-    body("amountChange").isNumeric().not().equals("0").not().isString(),
+    body("amountChange")
+      .optional()
+      .isNumeric()
+      .not()
+      .equals("0")
+      .not()
+      .isString(),
+    body("propertyId").optional().isMongoId(),
   ],
   validateRequest,
   async (req: Request, res: Response<ResBody>) => {
     const { transactionId } = req.params;
-    const { title, amountChange } = req.body;
+    const { title, amountChange, propertyId } = req.body;
     const user = req.user!;
 
     // Find transaction
@@ -69,10 +105,12 @@ router.patch(
         `Transaction "${transactionId}" could not be found.`
       );
     }
-    const transactionProperty = transaction.property as PropertyDocument;
+    let transactionProperty = transaction.property as PropertyDocument;
 
     // Create a copy of the old transaction to return.
     const oldTransaction = transaction.toJSON();
+    const oldPropertyId = transactionProperty._id as string;
+    const oldAmountChange = transaction.amountChange as number;
 
     // Amount of property to add to the user, as a result of this modification.
     let diffAmount = 0;
@@ -90,15 +128,29 @@ router.patch(
       if (amountChange) {
         transaction.amountChange = amountChange;
       }
+      if (propertyId) {
+        transaction.property = propertyId;
+      }
       await transaction.save({ session });
+      await transaction.populate("property", "name").execPopulate();
+      transactionProperty = transaction.property as PropertyDocument;
       // === END Update transaction document
 
       // === Update user points, if needed
-      if (diffAmount) {
+      if ((!propertyId || oldPropertyId == propertyId) && diffAmount) {
         await updatePropertyAmount(
           user.id,
           transactionProperty._id as string,
           diffAmount,
+          session
+        );
+      } else if (propertyId && oldPropertyId != propertyId) {
+        await updateOldAndNewPropertyAmount(
+          user.id,
+          oldPropertyId,
+          propertyId,
+          oldAmountChange,
+          amountChange ? amountChange : oldAmountChange,
           session
         );
       }
