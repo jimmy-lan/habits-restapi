@@ -11,9 +11,9 @@
  */
 export const defaultQuota = {
   maxTransactions: 1000,
-  maxDeletedTransactions: 1000,
+  maxTransactionsDeleted: 1000,
   maxProperties: 100,
-  maxDeletedProperties: 100,
+  maxPropertiesDeleted: 100,
 };
 
 /**
