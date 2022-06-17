@@ -29,7 +29,7 @@ router.get(
     })
       .sort({ createdAt: "desc" })
       .skip(findSkip)
-      .limit(Math.max(findLimit, fixedQuota.maxPageSize))
+      .limit(Math.min(findLimit, fixedQuota.maxPageSize))
       .exec();
 
     return res.json({

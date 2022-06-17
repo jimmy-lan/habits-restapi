@@ -51,7 +51,7 @@ const assignFieldsToProperty = (
     terminateIfExact("amount", property.amount, amount);
     property.amount = amount;
   }
-  if (amountInStock) {
+  if (amountInStock !== undefined) {
     terminateIfExact("amount in stock", property.amountInStock, amountInStock);
     property.amountInStock = amountInStock >= 0 ? amountInStock : undefined;
   }

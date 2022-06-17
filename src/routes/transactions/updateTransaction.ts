@@ -31,10 +31,10 @@ const updateOldAndNewPropertyAmount = async (
   }
   oldProperty.amount -= oldAmountChange;
   newProperty.amount += newAmountChange;
-  if (oldProperty.amountInStock) {
+  if (oldProperty.amountInStock !== undefined) {
     oldProperty.amountInStock += oldAmountChange;
   }
-  if (newProperty.amountInStock) {
+  if (newProperty.amountInStock !== undefined) {
     newProperty.amountInStock -= newAmountChange;
   }
   await oldProperty.save({ session });
@@ -52,7 +52,7 @@ const updatePropertyAmount = async (
     throw new NotFoundError("Could not locate property data.");
   }
   property.amount += diffAmount;
-  if (property.amountInStock) {
+  if (property.amountInStock !== undefined) {
     property.amountInStock -= diffAmount;
   }
   await property.save({ session });
