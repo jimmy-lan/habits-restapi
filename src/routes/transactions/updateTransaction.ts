@@ -25,23 +25,19 @@ const updateOldAndNewPropertyAmount = async (
   session: ClientSession
 ) => {
   const oldProperty = await Property.findOne({ _id: oldPropertyId, userId });
-  if (!oldProperty) {
-    throw new NotFoundError("Could not locate old property data.");
+  const newProperty = await Property.findOne({ _id: newPropertyId, userId });
+  if (!oldProperty || !newProperty) {
+    throw new NotFoundError("Could not locate property data.");
   }
   oldProperty.amount -= oldAmountChange;
+  newProperty.amount += newAmountChange;
   if (oldProperty.amountInStock) {
     oldProperty.amountInStock += oldAmountChange;
   }
-  await oldProperty.save({ session });
-
-  const newProperty = await Property.findOne({ _id: newPropertyId, userId });
-  if (!newProperty) {
-    throw new NotFoundError("Could not locate new property data.");
-  }
-  newProperty.amount += newAmountChange;
   if (newProperty.amountInStock) {
     newProperty.amountInStock -= newAmountChange;
   }
+  await oldProperty.save({ session });
   await newProperty.save({ session });
 };
 
