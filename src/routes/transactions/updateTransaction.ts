@@ -16,31 +16,6 @@ import mongoose, { ClientSession } from "mongoose";
 
 const router = Router();
 
-const updateOldAndNewPropertyAmount = async (
-  userId: string,
-  oldPropertyId: string,
-  newPropertyId: string,
-  oldAmountChange: number,
-  newAmountChange: number,
-  session: ClientSession
-) => {
-  const oldProperty = await Property.findOne({ _id: oldPropertyId, userId });
-  const newProperty = await Property.findOne({ _id: newPropertyId, userId });
-  if (!oldProperty || !newProperty) {
-    throw new NotFoundError("Could not locate property data.");
-  }
-  oldProperty.amount -= oldAmountChange;
-  newProperty.amount += newAmountChange;
-  if (oldProperty.amountInStock !== undefined) {
-    oldProperty.amountInStock += oldAmountChange;
-  }
-  if (newProperty.amountInStock !== undefined) {
-    newProperty.amountInStock -= newAmountChange;
-  }
-  await oldProperty.save({ session });
-  await newProperty.save({ session });
-};
-
 const updatePropertyAmount = async (
   userId: string,
   propertyId: string,
@@ -141,11 +116,15 @@ router.patch(
           session
         );
       } else if (propertyId && oldPropertyId != propertyId) {
-        await updateOldAndNewPropertyAmount(
+        await updatePropertyAmount(
           user.id,
           oldPropertyId,
+          -oldAmountChange,
+          session
+        );
+        await updatePropertyAmount(
+          user.id,
           propertyId,
-          oldAmountChange,
           amountChange ? amountChange : oldAmountChange,
           session
         );
